@@ -188,9 +188,9 @@ const baProjects: Project[] = [
   },
 ];
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, delay = 0 }: { project: Project; delay?: number }) {
   return (
-    <article className="group relative overflow-hidden rounded-[28px] border border-black/5 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#111315] md:p-5">
+    <article className="group relative overflow-hidden rounded-[28px] border border-black/5 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#111315] md:p-5 animate-soft-fade-up will-change-animated" style={{ ['--delay' as any]: `${delay}s` } as React.CSSProperties}>
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#1d9bf0] via-[#8b5cf6] to-[#facc15]" />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -316,7 +316,7 @@ export default function Home() {
       <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(29,155,240,0.08),_transparent_28%),linear-gradient(180deg,_#f5f5f3_0%,_#f0efee_100%)] text-[#111111] transition-colors duration-300 dark:bg-[radial-gradient(circle_at_top,_rgba(29,155,240,0.18),_transparent_28%),linear-gradient(180deg,_#07090b_0%,_#0f1113_100%)] dark:text-[#f5f5f5]">
         <div className="mx-auto max-w-6xl px-4 py-5 md:px-8">
           <header className="sticky top-4 z-20 mb-8 rounded-full border border-black/10 bg-white/80 px-4 py-3 shadow-[0_10px_30px_rgba(17,17,17,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-[#111315]/80">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between animate-soft-fade-down will-change-animated" style={{ ['--delay' as any]: '0s' } as React.CSSProperties}>
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 overflow-hidden rounded-full border border-black/10 bg-[#111111] dark:border-white/10">
                   <img src={isBA ? "/profile-portrait.jpg" : "/profile-portrait.png"} alt="Temitope Ajayi portrait" className="h-full w-full object-cover" />
@@ -357,7 +357,7 @@ export default function Home() {
           </header>
 
           <main className="space-y-8 pb-20">
-            <section className="rounded-[36px] border border-black/10 bg-[#fdfdfd] p-5 shadow-[0_18px_50px_rgba(17,17,17,0.05)] dark:border-white/10 dark:bg-[#111315] md:p-8">
+            <section className="rounded-[36px] border border-black/10 bg-[#fdfdfd] p-5 shadow-[0_18px_50px_rgba(17,17,17,0.05)] dark:border-white/10 dark:bg-[#111315] md:p-8 animate-soft-fade-up will-change-animated" style={{ ['--delay' as any]: '0.04s' } as React.CSSProperties}>
               <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
                 <div>
                   <div
@@ -481,8 +481,8 @@ export default function Home() {
               </div>
 
               <div className="space-y-5">
-                {projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
+                {projects.map((project, i) => (
+                  <ProjectCard key={project.id} project={project} delay={i * 0.06} />
                 ))}
               </div>
             </section>

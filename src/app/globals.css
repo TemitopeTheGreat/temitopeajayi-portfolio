@@ -42,3 +42,40 @@ img {
 ::selection {
   background: rgba(29, 155, 240, 0.18);
 }
+
+/* Soft entrance animations */
+@keyframes softFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.997);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes softFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.997);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-soft-fade-up {
+  animation: softFadeUp 520ms cubic-bezier(.2,.9,.25,1) both;
+  animation-delay: var(--delay, 0s);
+}
+
+.animate-soft-fade-down {
+  animation: softFadeDown 520ms cubic-bezier(.2,.9,.25,1) both;
+  animation-delay: var(--delay, 0s);
+}
+
+.will-change-animated {
+  will-change: transform, opacity;
+}
