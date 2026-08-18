@@ -16,6 +16,32 @@ export const metadata: Metadata = {
   title: "Temitope Ajayi | AI Engineer & Business Analyst",
   description:
     "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
+  openGraph: {
+    title: "Temitope Ajayi | AI Engineer & Business Analyst",
+    description:
+      "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
+    url: "https://temitopeajayi-portfolio.vercel.app",
+    siteName: "Temitope Ajayi",
+    images: [
+      {
+        url: "/profile-portrait.png",
+        width: 1200,
+        height: 630,
+        alt: "Temitope Ajayi",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Temitope Ajayi | AI Engineer & Business Analyst",
+    description:
+      "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
+    images: ["/profile-portrait.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/profile-portrait.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
