@@ -1,0 +1,68 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="900" fill="#F4F0E9"/>
+  <text x="700" y="90" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="54" font-weight="800" fill="#111111">HOW THE BOT WAS BUILT</text>
+
+  <rect x="120" y="430" width="540" height="250" rx="26" fill="#EEE5D8" stroke="#E4D8C0"/>
+  <g transform="translate(150 480)">
+    <rect x="0" y="0" width="180" height="150" rx="18" fill="#F8F8F8" stroke="#D3D3D3"/>
+    <rect x="30" y="32" width="120" height="85" rx="14" fill="#F7C86A"/>
+    <circle cx="90" cy="74" r="29" fill="#F7F3EE"/>
+    <path d="M74 74C78 62 90 57 100 69C108 80 102 92 90 96C82 99 75 92 74 74Z" fill="#F4B93A"/>
+    <circle cx="90" cy="74" r="10" fill="#111111" opacity="0.7"/>
+  </g>
+  <g transform="translate(430 490)">
+    <circle cx="35" cy="42" r="30" fill="#F5A623"/>
+    <circle cx="146" cy="42" r="30" fill="#2D9CDB"/>
+    <circle cx="257" cy="42" r="30" fill="#27AE60"/>
+    <path d="M65 42H116" stroke="#F2F2F2" stroke-width="4" stroke-linecap="round"/>
+    <path d="M176 42H227" stroke="#F2F2F2" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="35" cy="42" r="10" fill="#F5F3F0"/>
+    <circle cx="146" cy="42" r="10" fill="#F5F3F0"/>
+    <circle cx="257" cy="42" r="10" fill="#F5F3F0"/>
+  </g>
+
+  <g transform="translate(830 150)">
+    <rect x="0" y="0" width="220" height="92" rx="18" fill="#0F172A"/>
+    <text x="110" y="40" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="22" font-weight="700" fill="#F5F5F5">Docker</text>
+    <circle cx="54" cy="60" r="9" fill="#F4C95F"/>
+    <circle cx="76" cy="60" r="9" fill="#F4C95F"/>
+    <circle cx="98" cy="60" r="9" fill="#F4C95F"/>
+  </g>
+
+  <g transform="translate(840 285)">
+    <rect x="0" y="0" width="254" height="98" rx="18" fill="#F4F4F4"/>
+    <text x="127" y="44" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F172A">n8n</text>
+    <text x="127" y="74" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="18" fill="#595959">Orchestration • self-hosted</text>
+  </g>
+
+  <g transform="translate(840 470)">
+    <rect x="0" y="0" width="240" height="84" rx="18" fill="#F4F4F4"/>
+    <text x="120" y="42" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="28" font-weight="700" fill="#111111">Evolution API</text>
+    <text x="120" y="68" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="18" fill="#595959">WhatsApp gateway</text>
+  </g>
+
+  <g transform="translate(840 645)">
+    <rect x="0" y="0" width="240" height="84" rx="18" fill="#F4F4F4"/>
+    <text x="120" y="42" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="28" font-weight="700" fill="#111111">Google Sheets</text>
+    <text x="120" y="68" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="18" fill="#595959">Live inventory &amp; pricing</text>
+  </g>
+
+  <g transform="translate(880 112)">
+    <circle cx="0" cy="0" r="16" fill="#F7C86A"/>
+    <circle cx="170" cy="0" r="16" fill="#30BFAE"/>
+  </g>
+
+  <path d="M720 490L846 490" stroke="#0F172A" stroke-width="4" stroke-dasharray="10 10"/>
+  <path d="M720 540L840 540" stroke="#0F172A" stroke-width="4" stroke-dasharray="10 10"/>
+  <path d="M720 620L840 620" stroke="#0F172A" stroke-width="4" stroke-dasharray="10 10"/>
+
+  <g transform="translate(1066 180)">
+    <rect x="0" y="0" width="130" height="130" rx="18" fill="#27AE60"/>
+    <path d="M30 60H100M65 25V95M30 60H100" stroke="#F4F6F7" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(1066 495)">
+    <rect x="0" y="0" width="130" height="130" rx="18" fill="#30BFAE"/>
+    <path d="M38 38H92V92H38V38Z" stroke="#F4F6F7" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M38 62H92M62 38V92" stroke="#F4F6F7" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>
