@@ -16,7 +16,7 @@ import {
   type TrackKey,
 } from "./data";
 import { DeviceFrame, Frame, hostOf } from "./components/DeviceFrame";
-import { DriftImage, Reveal, Words, useScrollProgress } from "./components/ui";
+import { Cursor, DriftImage, Letters, Loader, Parallax, Reveal, ScrollWords, SectionDots, SmoothScroll, Words, scrollToTop, useScrollProgress } from "./components/ui";
 
 function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-[1280px] px-5 md:px-10 ${className}`}>{children}</div>;
@@ -59,7 +59,9 @@ function Feature({ project, flip, index }: { project: Project; flip: boolean; in
           </Reveal>
           <Reveal delay={0.12} className={`lg:col-span-7 ${flip ? "lg:order-1" : ""}`}>
             {project.image ? (
-              <DeviceFrame project={project} />
+              <Parallax speed={-0.05}>
+                <DeviceFrame project={project} />
+              </Parallax>
             ) : (
               <div className="bg-band p-8 text-bandink md:p-12">
                 <p className="text-[15px] opacity-80">{project.flow ? "The journey I mapped" : "Where I worked"}</p>
@@ -207,6 +209,7 @@ export default function Home() {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [hintDismissed, setHintDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [lens, setLens] = useState<{ to: TrackKey; n: number } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const progress = useScrollProgress();
 
@@ -219,11 +222,22 @@ export default function Home() {
   }, []);
 
   const switchTrack = (track: TrackKey) => {
-    setActiveTrack(track);
+    if (track === activeTrack || lens) return;
     setHintDismissed(true);
-    const url = new URL(window.location.href);
-    url.searchParams.set("view", track);
-    window.history.replaceState(null, "", url);
+    const apply = () => {
+      setActiveTrack(track);
+      const url = new URL(window.location.href);
+      url.searchParams.set("view", track);
+      window.history.replaceState(null, "", url);
+      scrollToTop(true);
+    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      apply();
+      return;
+    }
+    setLens({ to: track, n: Date.now() });
+    setTimeout(apply, 500);
+    setTimeout(() => setLens(null), 1050);
   };
 
   const toggleTheme = () => {
@@ -260,11 +274,22 @@ export default function Home() {
   const lead = ["First", "Then", "Next", "Finally"];
   const navLinks = isBA ? [NAV_LINKS[0], { id: "artefacts", label: "Artefacts" }, ...NAV_LINKS.slice(1)] : NAV_LINKS;
 
+  const sections = [{ id: "home", label: "Intro" }, ...navLinks.map((l) => ({ id: l.id, label: l.label })), { id: "contact", label: "Contact" }];
+
   const field = "w-full bg-paper px-4 py-3.5 text-[17px] text-ink placeholder:text-muted focus-visible:outline-ink";
 
   return (
     <div data-track={activeTrack} className="relative">
       <a href="#main" className="skip-link">Skip to Content</a>
+      <SmoothScroll />
+      <Loader />
+      <Cursor />
+      <SectionDots sections={sections} />
+      {lens ? (
+        <div key={lens.n} data-track={lens.to} className="lens-panel" aria-hidden="true">
+          <p className="display text-[clamp(2.2rem,8vw,6rem)]">{trackMeta[lens.to].label}</p>
+        </div>
+      ) : null}
       <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
 
       {/* ===== Header ===== */}
@@ -278,7 +303,7 @@ export default function Home() {
           <nav aria-label="Primary" className="hidden items-center gap-8 text-[16px] md:flex">
             {navLinks.map((l) => (
               <a key={l.id} href={`#${l.id}`} className="nlink">
-                {l.label}
+                <span className="roll"><span data-text={l.label}>{l.label}</span></span>
               </a>
             ))}
           </nav>
@@ -403,7 +428,7 @@ export default function Home() {
                   {isBA ? "How I help teams" : "What I build for teams"}
                 </h2>
               </Reveal>
-              <ul key={activeTrack} className="space-y-9 md:space-y-12 lg:col-span-7">
+              <ul key={activeTrack} className="focus-list space-y-9 md:space-y-12 lg:col-span-7">
                 {services[activeTrack].map((s, i) => (
                   <li key={s.title}>
                     <Reveal delay={i * 0.08}>
@@ -425,7 +450,7 @@ export default function Home() {
             <h2 id="about-title" className="sr-only">About</h2>
             <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
               <Reveal className="lg:col-span-7">
-                <p key={`${activeTrack}-st`} className="tight swap text-[1.35rem] font-semibold md:text-[1.9rem]">{track.statement}</p>
+                <ScrollWords key={`${activeTrack}-st`} text={track.statement} className="tight text-[1.35rem] font-semibold md:text-[1.9rem]" />
                 <p key={activeTrack} className="swap mt-6 max-w-xl text-[17px] leading-7">{track.intro}</p>
                 <dl className="mt-10 grid gap-6 md:grid-cols-3">
                   {principles[activeTrack].map((p) => (
@@ -462,6 +487,7 @@ export default function Home() {
               {processSteps[activeTrack].map((step, i) => (
                 <li key={step.title} className="stair" style={{ "--off": `${i * 56}px` } as CSSProperties}>
                   <Reveal delay={i * 0.1}>
+                    <div className="step-bar mb-4" style={{ "--delay": `${i * 0.1}s` } as CSSProperties} />
                     <p className="text-[15px] font-semibold text-muted">{lead[i]}</p>
                     <h3 className="display mt-1 text-[clamp(1.5rem,2.4vw,2rem)]">{step.title}</h3>
                     <p className="mt-3 text-[17px] leading-7">{step.body}</p>
@@ -522,7 +548,7 @@ export default function Home() {
         <Container className="pb-8 pt-14 md:pt-24">
           <Reveal>
             <p aria-hidden="true" className="display whitespace-nowrap text-[10.6vw] leading-[0.85]" style={{ letterSpacing: "-0.05em" }}>
-              Temitope Ajayi
+              <Letters text="Temitope Ajayi" />
             </p>
           </Reveal>
           <div className="mt-8 flex flex-col justify-between gap-3 text-[15px] text-muted sm:flex-row">

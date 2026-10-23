@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 // Adds "js" (so reveal-on-scroll never hides content when scripts fail) and restores the saved theme before first paint.
-const bootScript = `(function(){var d=document.documentElement;d.classList.add("js");try{d.classList.toggle("dark",localStorage.getItem("theme")==="dark")}catch(e){}})()`;
+const bootScript = `(function(){var d=document.documentElement;d.classList.add("js");try{if(sessionStorage.getItem("seen"))d.classList.add("seen")}catch(e){}try{d.classList.toggle("dark",localStorage.getItem("theme")==="dark")}catch(e){}})()`;
 
 const jsonLd = {
   "@context": "https://schema.org",
