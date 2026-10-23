@@ -8,6 +8,9 @@ export type Project = {
   summary: string;
   impact: string;
   tags: string[];
+  deliverables?: string[];
+  /** Ordered journey steps, shown as a flow when there is no screenshot */
+  flow?: string[];
   metrics?: string[];
   liveUrl?: string;
   image?: string;
@@ -36,6 +39,8 @@ export const trackMeta = {
     sub: "AI engineer building automation, chat and voice tools that teams actually use.",
     intro:
       "I’m a product-minded AI Engineer with hands-on experience designing intelligent workflows, automation tools, and user-centered digital experiences that improve operational efficiency and decision-making.",
+    statement:
+      "I combine AI engineering, business analysis, and product thinking to design systems that are practical, human-centred, and ready for real-world use.",
     typed: [
       "automate repetitive work",
       "ship AI-powered products",
@@ -52,6 +57,8 @@ export const trackMeta = {
     sub: "Business analyst turning tangled processes into requirements teams can build from.",
     intro:
       "I’m a Business Analyst focused on solving operational pain points through requirements gathering, stakeholder alignment, process improvement, and delivery planning that keeps teams moving with clarity.",
+    statement:
+      "I help teams work out what they actually need, then write it down so it can be built, tested and used.",
     typed: [
       "map messy processes",
       "align stakeholders",
@@ -63,108 +70,118 @@ export const trackMeta = {
   },
 } as const;
 
-export const roleSkills = {
+export const skillGroups = {
   ai: [
-    "Python",
-    "TypeScript",
-    "Next.js",
-    "React",
-    "AI automation",
-    "NLP",
-    "Prompt design",
-    "API integration",
-    "SQL",
-    "Power BI",
-    "Workflow design",
-    "Product thinking",
+    { title: "Build", items: ["Python", "TypeScript", "Next.js", "React", "API integration"] },
+    { title: "AI & automation", items: ["AI automation", "NLP", "Prompt design", "Workflow design"] },
+    { title: "Data", items: ["SQL", "Power BI", "Data handling"] },
+    { title: "Product", items: ["Product thinking", "User-centred design"] },
   ],
   ba: [
-    "Requirements gathering",
-    "Process mapping",
-    "Stakeholder management",
-    "Gap analysis",
-    "Business process design",
-    "Jira",
-    "UAT",
-    "Data analysis",
-    "Documentation",
-    "Risk assessment",
-    "Service improvement",
-    "Solution design",
+    {
+      title: "Elicitation & analysis",
+      items: ["Stakeholder interviews", "Requirements workshops", "Gap analysis", "Root cause analysis", "SWOT", "MoSCoW prioritisation"],
+    },
+    {
+      title: "Modelling & documentation",
+      items: ["Process mapping (swimlane, BPMN)", "User stories & acceptance criteria", "Use cases", "BRD / FRD", "Traceability matrix", "Wireframes"],
+    },
+    {
+      title: "Delivery",
+      items: ["Agile / Scrum", "Backlog refinement", "UAT planning", "Change requests", "Risk assessment", "RACI"],
+    },
+    { title: "Tools", items: ["Jira", "Confluence", "SQL", "Power BI", "Excel"] },
   ],
 } as const;
 
 export const services = {
   ai: [
     {
-      icon: "⚡",
       title: "Workflow & AI automation",
       body: "Turn repetitive intake, follow-up and coordination work into reliable automated flows.",
     },
     {
-      icon: "💬",
       title: "Chat & voice bots",
       body: "WhatsApp and voice assistants that take orders, answer questions and hand off cleanly to people.",
     },
     {
-      icon: "🧩",
       title: "Custom web apps",
       body: "Fast, responsive Next.js products, from check-in systems to audit dashboards.",
     },
     {
-      icon: "📊",
       title: "Data & dashboards",
       body: "SQL and Power BI views that make performance and risk visible at a glance.",
     },
   ],
   ba: [
     {
-      icon: "🔍",
-      title: "Discovery & requirements",
-      body: "Structured workshops and interviews that turn vague asks into testable requirements.",
+      title: "Requirements elicitation & documentation",
+      body: "Interviews and workshops turned into clear, testable requirements, BRDs and user stories.",
     },
     {
-      icon: "🗺️",
-      title: "Process mapping & redesign",
-      body: "Current-state to future-state maps that expose gaps, risks and quick wins.",
+      title: "Process modelling & gap analysis",
+      body: "Current-state and future-state swimlane maps that show handoffs, gaps and risks.",
     },
     {
-      icon: "🤝",
-      title: "Stakeholder alignment",
-      body: "Keep business, product and engineering moving in the same direction.",
+      title: "Backlog & delivery support",
+      body: "User stories with acceptance criteria, prioritised and tracked in Jira, with error paths covered.",
     },
     {
-      icon: "✅",
-      title: "UAT & delivery support",
-      body: "Clear acceptance criteria, test coordination and documentation that survive handoff.",
+      title: "Stakeholder alignment & UAT",
+      body: "Keeping business and delivery teams agreed on scope, and coordinating acceptance testing.",
     },
   ],
 } as const;
 
-export const processSteps = [
-  {
-    title: "Discover",
-    body: "Understand the people, the pain and what success actually looks like before anything is built.",
-  },
-  {
-    title: "Map",
-    body: "Make the current flow visible (handoffs, gaps and risks) and agree on the target state.",
-  },
-  {
-    title: "Build",
-    body: "Ship in small, usable slices, with the right people reviewing early and often.",
-  },
-  {
-    title: "Measure",
-    body: "Track response time, accuracy and adoption, then refine until the change sticks.",
-  },
-] as const;
+export const processSteps = {
+  ai: [
+    { title: "Discover", body: "Understand the people, the pain and what success looks like before anything is built." },
+    { title: "Map", body: "Make the current flow visible (handoffs, gaps and risks) and agree on the target state." },
+    { title: "Build", body: "Ship in small, usable slices, with the right people reviewing early and often." },
+    { title: "Measure", body: "Track response time, accuracy and adoption, then refine until the change sticks." },
+  ],
+  ba: [
+    { title: "Elicit", body: "Interviews, workshops and document review to understand the problem and who it affects." },
+    { title: "Analyse", body: "Map the current process, find the gaps and root causes, and size the options." },
+    { title: "Specify", body: "Write requirements and user stories with acceptance criteria, including the error paths." },
+    { title: "Validate", body: "Review with stakeholders, support UAT, and trace each requirement through to delivery." },
+  ],
+} as const;
 
-export const principles = [
-  { title: "Product-minded", body: "I start from the user and the outcome, not the tech." },
-  { title: "Execution-focused", body: "Clear scope, visible progress, things that actually ship." },
-  { title: "Human-centered", body: "Systems that are intelligent, but also practical to use." },
-] as const;
+export const principles = {
+  ai: [
+    { title: "Product-minded", body: "I start from the user and the outcome, not the tech." },
+    { title: "Execution-focused", body: "Clear scope, visible progress, things that actually ship." },
+    { title: "Human-centred", body: "Systems that are intelligent, but also practical to use." },
+  ],
+  ba: [
+    { title: "Start with the problem", body: "Understand the need and the people before proposing a solution." },
+    { title: "Write it to be tested", body: "Every requirement has acceptance criteria and a clear owner." },
+    { title: "Keep everyone aligned", body: "Stakeholders agree on scope, trade-offs and what done means." },
+  ],
+} as const;
+
+/** Real artefacts from the Guardrail Financials engagement, shown in the Business Analyst view. */
+export const baArtefacts = {
+  swimlane: {
+    src: "/artefacts/guardrail-registration-swimlane.png",
+    tall: 2.015,
+    alt: "Swimlane diagram of the Guardrail registration and email verification flow",
+    caption: "Registration and email verification flow (swimlane)",
+  },
+  backlog: {
+    src: "/guardrail-backlog.svg",
+    alt: "Guardrail product backlog in Jira",
+    caption: "Product backlog in Jira",
+  },
+  stories: [
+    { key: "SCRUM-5", epic: "User auth", story: "User can register with email and password" },
+    { key: "SCRUM-9", epic: "Transactions", story: "Admin can flag a suspicious transaction" },
+    { key: "SCRUM-22", epic: "Transactions", story: "Handle date filtering error due to an invalid date range" },
+    { key: "SCRUM-23", epic: "Transactions", story: "Input and log a transaction manually" },
+    { key: "SCRUM-25", epic: "Transactions", story: "Flag an individual entry as suspicious" },
+  ],
+} as const;
 
 const newProjects: Project[] = [
   {
@@ -306,18 +323,21 @@ export const aiProjects: Project[] = [
 ];
 
 export const baProjects: Project[] = [
-  ...newProjects.map((p) => ({ ...p, id: `${p.id}-ba` })),
   {
     id: "guardrail-ba",
     title: "Guardrail Financials",
     category: "Fintech",
-    context: "Bookkeeping audit process for SMEs",
+    context: "Requirements and process design for an SME bookkeeping audit platform",
     summary:
       "Evaluated how small businesses check their books and turned that into a structured audit workflow, mapping stakeholder touchpoints, review steps, and risk areas into a clearer service design.",
     impact:
       "Improved clarity around audit ownership, review priorities, and reporting by structuring a more dependable book-checking process for SMEs.",
-    tags: ["Process design", "Audit", "Risk review", "Stakeholders", "SME operations"],
-    metrics: ["Audit workflow", "Risk mapping", "Stakeholder clarity", "Reporting readiness"],
+    deliverables: [
+      "Swimlane process map for registration and email verification",
+      "Product backlog in Jira with user stories and error paths",
+      "Stakeholder touchpoints, review steps and risk areas",
+    ],
+    tags: ["Process design", "User stories", "Jira", "Risk review", "Stakeholders"],
     liveUrl: "https://guardrail-ashen.vercel.app/",
     image: "/guardrail-backlog.svg",
     accent: ["#1d9bf0", "#8b5cf6", "#34d399"],
@@ -326,15 +346,24 @@ export const baProjects: Project[] = [
     id: "treasurevilla-ba",
     title: "Treasureville",
     category: "Web Apps",
-    context: "Kids check-in journey and process design",
+    context: "Check-in journey and process design for a children’s service",
     summary:
       "Mapped the end-to-end check-in journey for kids, from unique code issuance to staff verification and pickup, to improve clarity, speed, and safety at every handoff.",
     impact:
       "Powered a faster, more trustworthy check-in process by clarifying exactly how codes are issued, verified, and matched at pickup.",
-    tags: ["Journey mapping", "Check-in", "UX", "Service flow", "Research"],
-    metrics: ["Check-in flow", "Code verification", "Pickup safety", "Process clarity"],
+    deliverables: [
+      "End-to-end check-in journey map",
+      "Code issuance, verification and pickup steps",
+      "Handoff points between parents and staff",
+    ],
+    tags: ["Journey mapping", "Service flow", "UX", "Research"],
+    flow: [
+      "A unique code is issued to the child",
+      "Staff verify the code and check the child in",
+      "At pickup, the guardian presents the code",
+      "Staff match it and check the child out",
+    ],
     liveUrl: "https://ln.run/M3RYD",
-    image: "/treasureville-preview.png",
     accent: ["#f59e0b", "#f472b6", "#1d9bf0"],
   },
   {
@@ -346,8 +375,13 @@ export const baProjects: Project[] = [
       "Worked across issue tracking, IT asset visibility, and operational handoff points to improve clarity, documentation, and service continuity in a complex environment.",
     impact:
       "Helped shape a stronger operational foundation by improving visibility, accountability, and consistency in support and service activities.",
-    tags: ["IT support", "Asset flow", "Documentation", "Process improvement", "Stakeholder alignment"],
-    metrics: ["Issue flow", "Support structure", "Asset visibility", "Service continuity"],
+    deliverables: [
+      "Issue-tracking flow",
+      "IT asset visibility",
+      "Operational handoff points",
+      "Process documentation",
+    ],
+    tags: ["IT support", "Documentation", "Process improvement", "Stakeholder alignment"],
     accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
   },
 ];
