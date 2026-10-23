@@ -140,6 +140,36 @@ export function Letters({ text }: { text: string }) {
   );
 }
 
+/** Sizes its text so it spans exactly the width of its container, edge to edge. */
+export function FitText({ children }: { children: ReactNode }) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const text = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const w = wrap.current;
+    const t = text.current;
+    if (!w || !t) return;
+    const fit = () => {
+      t.style.fontSize = "100px";
+      const natural = t.getBoundingClientRect().width;
+      if (natural > 0) t.style.fontSize = `${(100 * w.clientWidth) / natural}px`;
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(w);
+    document.fonts?.ready.then(fit);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={wrap} className="w-full overflow-hidden">
+      <p ref={text} aria-hidden="true" className="display -mb-[0.1em] inline-block whitespace-nowrap leading-[0.85]" style={{ fontSize: "10.6vw", letterSpacing: "-0.05em", paddingBottom: "0.22em" }}>
+        {children}
+      </p>
+    </div>
+  );
+}
+
 /** Words brighten one by one as you scroll through the paragraph. */
 export function ScrollWords({ text, className = "" }: { text: string; className?: string }) {
   const ref = useRef<HTMLParagraphElement>(null);

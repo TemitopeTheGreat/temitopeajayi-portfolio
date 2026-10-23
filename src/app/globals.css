@@ -259,7 +259,7 @@ html:not(.seen) .img-wipe { animation-delay: 1.9s; }
 
 /* ===== Footer name: letters rise ===== */
 .letters { display: inline-block; }
-.letter { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.letter { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.3em; margin-bottom: -0.3em; }
 .letter > span { display: inline-block; }
 .js .letter > span { transform: translateY(110%); transition: transform 900ms cubic-bezier(.2,.8,.15,1) calc(var(--i, 0) * 45ms); }
 .js .is-visible .letter > span { transform: none; }

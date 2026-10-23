@@ -16,7 +16,7 @@ import {
   type TrackKey,
 } from "./data";
 import { DeviceFrame, Frame, hostOf } from "./components/DeviceFrame";
-import { Cursor, DriftImage, Letters, Loader, Parallax, Reveal, ScrollWords, SectionDots, SmoothScroll, Words, scrollToTop, useScrollProgress } from "./components/ui";
+import { Cursor, DriftImage, FitText, Letters, Loader, Parallax, Reveal, ScrollWords, SectionDots, SmoothScroll, Words, scrollToTop, useScrollProgress } from "./components/ui";
 
 function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-[1280px] px-5 md:px-10 ${className}`}>{children}</div>;
@@ -547,9 +547,9 @@ export default function Home() {
       <footer className="overflow-hidden bg-paper">
         <Container className="pb-8 pt-14 md:pt-24">
           <Reveal>
-            <p aria-hidden="true" className="display whitespace-nowrap text-[10.6vw] leading-[0.85]" style={{ letterSpacing: "-0.05em" }}>
+            <FitText>
               <Letters text="Temitope Ajayi" />
-            </p>
+            </FitText>
           </Reveal>
           <div className="mt-8 flex flex-col justify-between gap-3 text-[15px] text-muted sm:flex-row">
             <p>© {new Date().getFullYear()} Temitope Ajayi. AI Engineer &amp; Business Analyst.</p>
