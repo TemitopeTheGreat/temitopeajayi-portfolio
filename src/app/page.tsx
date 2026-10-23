@@ -1,514 +1,433 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent, type ReactNode } from "react";
+import {
+  CONTACT,
+  NAV_LINKS,
+  aiProjects,
+  baProjects,
+  principles,
+  processSteps,
+  roleSkills,
+  services,
+  trackMeta,
+  type Project,
+  type TrackKey,
+} from "./data";
+import { DeviceFrame, hostOf } from "./components/DeviceFrame";
+import { DriftImage, Reveal, Words, useScrollProgress } from "./components/ui";
 
-type TrackKey = "ai" | "ba";
+function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`mx-auto w-full max-w-[1400px] px-5 md:px-10 ${className}`}>{children}</div>;
+}
 
-type Project = {
-  id: string;
-  title: string;
-  context: string;
-  summary: string;
-  impact: string;
-  tags: string[];
-  metrics?: string[];
-  liveUrl?: string;
-  image?: string;
-  accent?: [string, string, string];
-};
+const h2 = "display text-[clamp(2.3rem,6vw,5.2rem)]";
 
-const trackMeta = {
-  ai: {
-    label: "AI Engineer",
-    badge: "Open to Work",
-    headline: "I build practical systems that make work clearer, faster, and smarter.",
-    intro:
-      "I’m a product-minded AI Engineer with hands-on experience designing intelligent workflows, automation tools, and user-centered digital experiences that improve operational efficiency and decision-making.",
-  },
-  ba: {
-    label: "Business Analyst",
-    badge: "Open to Work",
-    headline: "I turn complex business problems into clear strategy and momentum.",
-    intro:
-      "I’m a Business Analyst focused on solving operational pain points through requirements gathering, stakeholder alignment, process improvement, and delivery planning that keeps teams moving with clarity.",
-  },
-} as const;
-
-const roleSkills = {
-  ai: [
-    "Python",
-    "TypeScript",
-    "Next.js",
-    "React",
-    "AI automation",
-    "NLP",
-    "Prompt design",
-    "API integration",
-    "SQL",
-    "Power BI",
-    "Workflow design",
-    "Product thinking",
-  ],
-  ba: [
-    "Requirements gathering",
-    "Process mapping",
-    "Stakeholder management",
-    "Gap analysis",
-    "Business process design",
-    "Jira",
-    "UAT",
-    "Data analysis",
-    "Documentation",
-    "Risk assessment",
-    "Service improvement",
-    "Solution design",
-  ],
-} as const;
-
-const aiProjects: Project[] = [
-  {
-    id: "whatsapp-bot",
-    title: "WhatsApp Automation Bot",
-    context: "Order flow and service automation",
-    summary:
-      "Built a WhatsApp automation bot that captured incoming requests, synchronized order and customer details, and reduced manual coordination across service flows.",
-    impact:
-      "Improved response speed and reduced operating friction by turning repetitive customer communication and order tracking into a smoother automated workflow.",
-    tags: ["WhatsApp", "Automation", "Order flow", "Workflow", "Integration"],
-    metrics: ["Automation", "Response speed", "Order sync", "Workflow clarity"],
-    image: "/whatsapp-bot-architecture.svg",
-    accent: ["#34d399", "#1d9bf0", "#8b5cf6"],
-  },
-  {
-    id: "guardrail",
-    title: "Guardrail",
-    context: "AI risk monitoring workflow",
-    summary:
-      "Built a product experience for AI risk visibility, workflow control, and operational safeguards with a clear decision-making surface for teams.",
-    impact:
-      "Improved operational confidence by making AI oversight more visible, structured, and easier to govern in real execution environments.",
-    tags: ["Next.js", "AI Ops", "UX", "Dashboard", "Workflow"],
-    metrics: ["Risk visibility", "Workflow clarity", "Operations control", "Team review"],
-    liveUrl: "https://guardrail-ashen.vercel.app/",
-    image: "/guardrail-brand.svg",
-    accent: ["#1d9bf0", "#8b5cf6", "#34d399"],
-  },
-  {
-    id: "treasurevilla",
-    title: "Treasurevilla",
-    context: "Conversion-focused product experience",
-    summary:
-      "Designed a polished digital journey with strong information flow, conversion-oriented structure, and modern product storytelling for a user-first experience.",
-    impact:
-      "Created a credible, high-quality front-end experience that supports clearer brand communication and stronger customer engagement.",
-    tags: ["Next.js", "Landing UX", "Product design", "Conversion", "Front-end"],
-    metrics: ["Journey design", "Mobile-ready", "Offer clarity", "Conversion flow"],
-    liveUrl: "https://ln.run/M3RYD",
-    image: "/treasureville-login.svg",
-    accent: ["#f59e0b", "#f472b6", "#1d9bf0"],
-  },
-  {
-    id: "ai-operations",
-    title: "AI Operations Workflow",
-    context: "Automation and process optimization",
-    summary:
-      "Designed an AI-assisted operations flow for handling recurring service and intake tasks with clearer structure, less manual dependency, and stronger execution consistency.",
-    impact:
-      "Improved process quality and response speed by transforming repetitive coordination into a more reliable, systemized workflow.",
-    tags: ["AI workflow", "Automation", "Ops design", "Decision support", "Process mapping"],
-    metrics: ["Automation", "Response speed", "Consistency", "Workflow clarity"],
-    accent: ["#34d399", "#1d9bf0", "#8b5cf6"],
-  },
-  {
-    id: "intake-automation",
-    title: "AI Intake & Screening Flow",
-    context: "Structured decision support",
-    summary:
-      "Developed a workflow that organizes incoming requests, standardizes evaluation pathways, and reduces the manual effort required in high-volume decision tasks.",
-    impact:
-      "Allowed work to move faster with better consistency by turning ad hoc intake into a more structured screening model.",
-    tags: ["AI workflow", "Automation", "Screening", "Data handling", "Evaluation"],
-    metrics: ["Intake structure", "Automation", "Screening flow", "Efficiency"],
-    accent: ["#1d9bf0", "#22c55e", "#fbbf24"],
-  },
-  {
-    id: "ops-visibility",
-    title: "Ops Visibility Layer",
-    context: "Operational monitoring and alignment",
-    summary:
-      "Built a practical monitoring layer for operational work, helping teams track movement, visibility, and decision support in a cleaner format.",
-    impact:
-      "Strengthened team coordination by improving visibility across service flow and operational decision points.",
-    tags: ["Monitoring", "AI ops", "Feedback", "Process design", "Visibility"],
-    metrics: ["Visibility", "Coordination", "Feedback", "Operational clarity"],
-    accent: ["#8b5cf6", "#14b8a6", "#f59e0b"],
-  },
-];
-
-const baProjects: Project[] = [
-  {
-    id: "guardrail-ba",
-    title: "Guardrail",
-    context: "Business process and strategic oversight",
-    summary:
-      "Evaluated operational models, stakeholder touchpoints, and governance needs to turn a complex AI workflow into a clearer service design and decision process.",
-    impact:
-      "Improved clarity around workflow ownership, governance, and execution priorities by structuring a more dependable operating model.",
-    tags: ["Process design", "Governance", "Risk review", "Stakeholders", "Operations"],
-    metrics: ["Workflow design", "Governance mapping", "Stakeholder clarity", "Operational readiness"],
-    liveUrl: "https://guardrail-ashen.vercel.app/",
-    image: "/guardrail-backlog.svg",
-    accent: ["#1d9bf0", "#8b5cf6", "#34d399"],
-  },
-  {
-    id: "treasurevilla-ba",
-    title: "Treasurevilla",
-    context: "User journey and conversion strategy",
-    summary:
-      "Mapped the user journey and conversion flow to improve engagement quality, information clarity, and conversion-focused decision points across the experience.",
-    impact:
-      "Powered a stronger customer journey by clarifying user intent, information flow, and the transition from interest to action.",
-    tags: ["Journey mapping", "Conversion", "UX", "Service flow", "Research"],
-    metrics: ["User flow", "Journey clarity", "Offer structure", "Engagement"],
-    liveUrl: "https://ln.run/M3RYD",
-    image: "/treasureville-preview.png",
-    accent: ["#f59e0b", "#f472b6", "#1d9bf0"],
-  },
-  {
-    id: "internship-ba",
-    title: "Enterprise IT Internship",
-    context: "Process improvement and service operations",
-    summary:
-      "Worked across issue tracking, IT asset visibility, and operational handoff points to improve clarity, documentation, and service continuity in a complex environment.",
-    impact:
-      "Helped shape a stronger operational foundation by improving visibility, accountability, and consistency in support and service activities.",
-    tags: ["IT support", "Asset flow", "Documentation", "Process improvement", "Stakeholder alignment"],
-    metrics: ["Issue flow", "Support structure", "Asset visibility", "Service continuity"],
-    accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
-  },
-];
-
-function ProjectCard({ project, delay = 0 }: { project: Project; delay?: number }) {
+/* ---------- Live sites: big alternating blocks ---------- */
+function Feature({ project, flip, index }: { project: Project; flip: boolean; index: number }) {
   return (
-    <article className="group relative overflow-hidden rounded-[28px] border border-black/5 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-[#111315] md:p-5 animate-soft-fade-up will-change-animated" style={{ ['--delay' as any]: `${delay}s` } as React.CSSProperties}>
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#1d9bf0] via-[#8b5cf6] to-[#facc15]" />
-
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">{project.context}</p>
-          <h3 className="mt-2 text-2xl font-black tracking-[-0.06em] text-[#111111] dark:text-white">{project.title}</h3>
+    <section className={index % 2 === 0 ? "bg-surface" : "bg-paper"} aria-labelledby={`p-${project.id}`}>
+      <Container className="py-20 md:py-32">
+        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className={`lg:col-span-5 ${flip ? "lg:order-2" : ""}`}>
+            <p className="text-[15px] text-muted">{project.context}</p>
+            <h3 id={`p-${project.id}`} className="display mt-3 text-[clamp(2.2rem,5vw,4.4rem)]">
+              {project.title}
+            </h3>
+            <p className="mt-6 max-w-lg text-lg leading-8">{project.summary}</p>
+            <p className="mt-5 max-w-lg text-lg leading-8">
+              <strong className="font-semibold">Result: </strong>
+              {project.impact}
+            </p>
+            <p className="mt-5 max-w-lg text-[15px] text-muted">{project.tags.join(", ")}</p>
+            {project.liveUrl ? (
+              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="btn mt-8">
+                Visit {hostOf(project.liveUrl)} <span className="arrow" aria-hidden="true">↗</span>
+              </a>
+            ) : null}
+          </Reveal>
+          <Reveal delay={0.12} className={`lg:col-span-7 ${flip ? "lg:order-1" : ""}`}>
+            <DeviceFrame project={project} />
+          </Reveal>
         </div>
+      </Container>
+    </section>
+  );
+}
 
-        {project.liveUrl ? (
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center rounded-full border border-[#1d9bf0]/20 bg-[#1d9bf0] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white shadow-[0_8px_18px_rgba(29,155,240,0.28)] transition hover:bg-[#0f8ada] dark:bg-[#1d9bf0]"
-          >
-            Check out
-          </a>
+/* ---------- Everything else: an index with a cursor-following preview ---------- */
+function MoreWork({ projects }: { projects: Project[] }) {
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [preview, setPreview] = useState<{ src: string; on: boolean }>({ src: "", on: false });
+
+  const move = (e: MouseEvent) => {
+    const el = previewRef.current;
+    if (el) el.style.transform = `translate3d(${e.clientX + 28}px, ${e.clientY - 90}px, 0) rotate(-2deg)`;
+  };
+
+  return (
+    <div onMouseMove={move}>
+      <ul>
+        {projects.map((p, i) => (
+          <li key={p.id}>
+            <Reveal delay={Math.min(i, 3) * 0.07}>
+              <article
+                tabIndex={0}
+                onMouseEnter={() => p.image && setPreview({ src: p.image, on: true })}
+                onMouseLeave={() => setPreview((s) => ({ ...s, on: false }))}
+                onFocus={() => p.image && setPreview({ src: p.image, on: true })}
+                onBlur={() => setPreview((s) => ({ ...s, on: false }))}
+                className="row grid gap-3 px-3 py-9 md:grid-cols-12 md:gap-8 md:px-6 md:py-12"
+              >
+                <h4 className="display text-[clamp(1.8rem,3.6vw,3.2rem)] md:col-span-5">
+                  <span className="row-title">{p.title}</span>
+                </h4>
+                <div className="md:col-span-7">
+                  <p className="text-[15px] opacity-70">
+                    {p.context}
+                    {p.liveUrl ? null : " · Confidential"}
+                  </p>
+                  <p className="mt-2 max-w-2xl text-lg leading-8">{p.summary}</p>
+                  <p className="mt-3 text-[15px] opacity-70">{p.tags.join(", ")}</p>
+                  {p.liveUrl ? (
+                    <a href={p.liveUrl} target="_blank" rel="noreferrer" className="tlink mt-3 inline-block font-semibold">
+                      Visit {hostOf(p.liveUrl)} ↗
+                    </a>
+                  ) : null}
+                </div>
+              </article>
+            </Reveal>
+          </li>
+        ))}
+      </ul>
+      <div ref={previewRef} aria-hidden="true" className={`hover-preview bg-white ${preview.on ? "on" : ""}`}>
+        {preview.src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={preview.src} alt="" width={680} height={425} className="aspect-[16/10] w-full object-contain p-2" />
         ) : null}
       </div>
-
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[22px] border border-black/5 bg-[#f6f7f8] p-3 dark:border-white/10 dark:bg-[#181a1d]">
-          <div className="mb-3 flex items-center justify-between rounded-2xl border border-black/5 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#0f1113]">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#1d9bf0]" />
-              <span className="h-2.5 w-16 rounded-full bg-[#d4d4d8] dark:bg-[#374151]" />
-            </div>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">Preview</span>
-          </div>
-
-          {project.image ? (
-            project.liveUrl ? (
-              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-[18px] border border-black/5 bg-white shadow-inner transition hover:opacity-95 dark:border-white/10 dark:bg-[#101214]">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-[240px] w-full object-cover object-top"
-                />
-              </a>
-            ) : (
-              <div className="overflow-hidden rounded-[18px] border border-black/5 bg-white shadow-inner dark:border-white/10 dark:bg-[#101214]">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-[240px] w-full object-cover object-top"
-                />
-              </div>
-            )
-          ) : (
-            <div
-              className="rounded-[18px] border border-black/5 p-3 shadow-inner dark:border-white/10"
-              style={{
-                background: `linear-gradient(135deg, ${project.accent?.[0] ?? "#1d9bf0"} 0%, ${project.accent?.[1] ?? "#8b5cf6"} 50%, ${project.accent?.[2] ?? "#34d399"} 100%)`,
-              }}
-            >
-              <div className="rounded-[16px] border border-white/40 bg-[#0f172a]/15 p-3 backdrop-blur-sm">
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="h-2.5 w-20 rounded-full bg-white/70" />
-                  <div className="h-2.5 w-12 rounded-full bg-[#f8fafc]/80" />
-                </div>
-                <div className="space-y-2">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-white/80" />
-                      <span className="block h-2.5 flex-1 rounded-full bg-white/35" style={{ width: `${72 + index * 6}%` }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            {project.metrics?.slice(0, 3).map((metric, index) => (
-              <div key={metric} className="rounded-xl border border-black/5 bg-[#f7f7f7] p-2 text-center dark:border-white/10 dark:bg-[#0f1113]">
-                <span className="mb-1 block h-2 w-2 rounded-full mx-auto" style={{ backgroundColor: ["#1d9bf0", "#8b5cf6", "#34d399"][index % 3] }} />
-                <span className="text-[9px] font-medium text-[#111111] dark:text-white">{metric}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="rounded-[20px] border border-black/5 bg-[#f8f8f8] p-4 dark:border-white/10 dark:bg-[#0f1113]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">Summary</p>
-            <p className="mt-3 text-base leading-7 text-[#1f2937] dark:text-[#e5e7eb]">{project.summary}</p>
-          </div>
-
-          <div className="rounded-[20px] bg-[#111111] p-4 text-white dark:bg-[#f5f5f5] dark:text-[#111111]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a1a1aa] dark:text-[#374151]">Impact</p>
-            <p className="mt-3 text-base leading-7 text-white dark:text-[#111111]">{project.impact}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <span key={tag} className="rounded-full border border-black/10 bg-[#f3f4f6] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#111111] dark:border-white/10 dark:bg-white/5 dark:text-white">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </article>
+    </div>
   );
 }
 
 export default function Home() {
   const [activeTrack, setActiveTrack] = useState<TrackKey>("ai");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
+  const [hintDismissed, setHintDismissed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const progress = useScrollProgress();
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
+    const view = new URLSearchParams(window.location.search).get("view");
+    if (view === "ba" || view === "ai") setActiveTrack(view);
+    const timer = setTimeout(() => setHintDismissed(true), 6300);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const currentTrack = trackMeta[activeTrack];
-  const projects = activeTrack === "ai" ? aiProjects : baProjects;
+  const switchTrack = (track: TrackKey) => {
+    setActiveTrack(track);
+    setHintDismissed(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", track);
+    window.history.replaceState(null, "", url);
+  };
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+    try {
+      localStorage.setItem("theme", next);
+    } catch {}
+  };
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      window.location.href = `mailto:${CONTACT.email}`;
+    }
+  };
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const subject = `Portfolio enquiry from ${form.name}`;
+    const body = `${form.message}\n\n${form.name} (${form.email})`;
+    window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const track = trackMeta[activeTrack];
   const isBA = activeTrack === "ba";
-  const accentColor = isBA ? "#f59e0b" : "#1d9bf0";
-  const accentSoft = isBA ? "rgba(245, 158, 11, 0.18)" : "rgba(29, 155, 240, 0.18)";
+  const projects = activeTrack === "ai" ? aiProjects : baProjects;
+  const features = projects.filter((p) => p.image?.startsWith("/shots/"));
+  const rest = projects.filter((p) => !p.image?.startsWith("/shots/"));
+  const lead = ["First", "Then", "Next", "Finally"];
+
+  const field =
+    "w-full bg-paper px-4 py-3.5 text-[17px] text-ink placeholder:text-muted focus-visible:outline-ink";
 
   return (
-    <div className={theme === "dark" ? "dark" : ""}>
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(29,155,240,0.08),_transparent_28%),linear-gradient(180deg,_#f5f5f3_0%,_#f0efee_100%)] text-[#111111] transition-colors duration-300 dark:bg-[radial-gradient(circle_at_top,_rgba(29,155,240,0.18),_transparent_28%),linear-gradient(180deg,_#07090b_0%,_#0f1113_100%)] dark:text-[#f5f5f5]">
-        <div className="mx-auto max-w-6xl px-4 py-5 md:px-8">
-          <header className="sticky top-4 z-20 mb-8 rounded-full border border-black/10 bg-white/80 px-4 py-3 shadow-[0_10px_30px_rgba(17,17,17,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-[#111315]/80">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between animate-soft-fade-down will-change-animated" style={{ ['--delay' as any]: '0s' } as React.CSSProperties}>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 overflow-hidden rounded-full border border-black/10 bg-[#111111] dark:border-white/10">
-                  <img src={isBA ? "/profile-portrait.jpg" : "/profile-portrait.png"} alt="Temitope Ajayi portrait" className="h-full w-full object-cover" />
+    <div data-track={activeTrack} className="relative">
+      <a href="#main" className="skip-link">Skip to Content</a>
+      <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
+
+      {/* ===== Header ===== */}
+      <header className="sticky top-0 z-50 bg-paper">
+        <Container className="drop flex items-center justify-between gap-4 py-4">
+          <a href="#home" className="text-lg font-bold tracking-tight">
+            <span className="hidden sm:inline">Temitope Ajayi</span>
+            <span className="sm:hidden">T. Ajayi</span>
+          </a>
+
+          <nav aria-label="Primary" className="hidden items-center gap-9 text-[16px] md:flex">
+            {NAV_LINKS.map((l) => (
+              <a key={l.id} href={`#${l.id}`} className="nlink">
+                {l.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative">
+              <div role="group" aria-label="Choose a view" className="flex text-[14px] font-semibold sm:text-[15px]">
+                {(["ai", "ba"] as TrackKey[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => switchTrack(t)}
+                    aria-pressed={activeTrack === t}
+                    aria-label={t === "ai" ? "AI Engineer view" : "Business Analyst view"}
+                    className={`seg px-3 py-2.5 sm:px-5 ${activeTrack === t ? "bg-accent text-onaccent" : "bg-surface text-ink hover:bg-ink hover:text-paper"}`}
+                  >
+                    <span className="sm:hidden">{t === "ai" ? "AI" : "BA"}</span>
+                    <span className="hidden sm:inline">{t === "ai" ? "AI Engineer" : "Business Analyst"}</span>
+                  </button>
+                ))}
+              </div>
+              {!hintDismissed ? (
+                <div aria-hidden="true" className="hint pointer-events-none absolute right-0 top-full mt-2 whitespace-nowrap bg-ink px-3 py-1.5 text-[13px] font-semibold text-paper">
+                  Tap to Switch View
                 </div>
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#d1d5db]">Temitope Ajayi</p>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.18em]" style={{ color: accentColor }}>AI • BA</p>
+              ) : null}
+            </div>
+
+            <button onClick={toggleTheme} className="seg bg-surface px-3 py-2.5 text-[14px] font-semibold hover:bg-ink hover:text-paper sm:text-[15px]" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
+          </div>
+        </Container>
+      </header>
+
+      <main id="main">
+        {/* ===== Hero ===== */}
+        <section id="home" aria-labelledby="hero-title">
+          <Container className="pb-24 pt-8 md:pb-40 md:pt-14">
+            <h1 id="hero-title" key={activeTrack} className="display text-[clamp(2.15rem,9.6vw,9.4rem)]">
+              <Words text={track.headline} />
+            </h1>
+
+            <div className="mt-10 grid gap-10 md:mt-14 lg:grid-cols-12 lg:gap-16">
+              <div key={`${activeTrack}-sub`} className="swap lg:col-span-7" style={{ "--delay": "0.35s" } as CSSProperties}>
+                <p className="max-w-md text-pretty text-xl leading-8 md:text-[22px] md:leading-9">{track.sub}</p>
+                <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <a href="#work" className="btn">
+                    View the Work <span className="arrow" aria-hidden="true">↓</span>
+                  </a>
+                  <a href="#contact" className="tlink font-semibold">Email Me</a>
+                </div>
+                <div className="mt-14 md:mt-20">
+                  <p className="text-[15px] text-muted">Live right now</p>
+                  <ul className="mt-3">
+                    {features.map((p) => (
+                      <li key={p.id}>
+                        <a href={p.liveUrl} target="_blank" rel="noreferrer" className="lift tight block py-1.5 text-[clamp(1.6rem,3.2vw,2.8rem)] font-bold">
+                          {p.title} <span aria-hidden="true">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-full border border-black/10 bg-[#f5f5f5] p-1 dark:border-white/10 dark:bg-[#181a1d]">
-                  {(["ai", "ba"] as TrackKey[]).map((track) => (
-                    <button
-                      key={track}
-                      onClick={() => setActiveTrack(track)}
-                      className={`rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] transition ${
-                        activeTrack === track
-                          ? isBA
-                            ? "bg-[#f59e0b] text-[#111111] shadow-md"
-                            : "bg-[#111111] text-white shadow-md dark:bg-white dark:text-[#111111]"
-                          : "text-[#374151] hover:text-[#111111] dark:text-[#d1d5db] dark:hover:text-white"
-                      }`}
-                    >
-                      {track === "ai" ? "AI Engineer" : "Business Analyst"}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="rounded-full border border-black/10 bg-[#111111] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#1f2937] dark:border-white/10 dark:bg-white dark:text-[#111111]"
-                >
-                  {theme === "dark" ? "Light" : "Dark"}
-                </button>
+              <div className="lg:col-span-5">
+                <DriftImage src={isBA ? "/profile-portrait.jpg" : "/profile-portrait.png"} alt="Temitope Ajayi" position="50% 0%" />
               </div>
             </div>
-          </header>
+          </Container>
+        </section>
 
-          <main className="space-y-8 pb-20">
-            <section className="rounded-[36px] border border-black/10 bg-[#fdfdfd] p-5 shadow-[0_18px_50px_rgba(17,17,17,0.05)] dark:border-white/10 dark:bg-[#111315] md:p-8 animate-soft-fade-up will-change-animated" style={{ ['--delay' as any]: '0.04s' } as React.CSSProperties}>
-              <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-                <div>
-                  <div
-                    className="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em]"
-                    style={{
-                      borderColor: isBA ? "rgba(245, 158, 11, 0.38)" : "rgba(29, 155, 240, 0.30)",
-                      background: isBA ? "rgba(245, 158, 11, 0.12)" : "rgba(29, 155, 240, 0.10)",
-                      color: isBA ? "#8a5b00" : "#0f6fb5",
-                    }}
-                  >
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: accentColor }} />
-                    {currentTrack.badge}
-                  </div>
+        {/* ===== Work ===== */}
+        <section id="work" aria-labelledby="work-title">
+          <div className="bg-surface">
+            <Container className="pb-4 pt-24 md:pt-40">
+              <Reveal>
+                <h2 id="work-title" className={h2}>Selected work</h2>
+                <p className="mt-6 max-w-xl text-xl leading-8">
+                  Sites you can open right now, then the systems that live behind company walls.
+                </p>
+              </Reveal>
+            </Container>
+          </div>
+          <div key={activeTrack}>
+            {features.map((p, i) => (
+              <Feature key={p.id} project={p} flip={i % 2 === 1} index={i + 1} />
+            ))}
+          </div>
 
-                  <h1 className="max-w-xl text-4xl font-black leading-[0.9] tracking-[-0.08em] text-[#111111] dark:text-white md:text-6xl">
-                    {currentTrack.headline}
-                  </h1>
+          {rest.length > 0 ? (
+            <div className={features.length % 2 === 0 ? "bg-paper" : "bg-surface"}>
+              <Container className="py-20 md:py-32">
+                <Reveal>
+                  <h3 className="display text-[clamp(1.9rem,4vw,3.4rem)]">More systems &amp; automation</h3>
+                </Reveal>
+                <div key={`${activeTrack}-more`} className="mt-10 md:mt-16">
+                  <MoreWork projects={rest} />
+                </div>
+              </Container>
+            </div>
+          ) : null}
+        </section>
 
-                  <p className="mt-5 max-w-xl text-lg leading-8 text-[#374151] dark:text-[#d1d5db]">
-                    {currentTrack.intro}
-                  </p>
-
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-[#4b5563] dark:text-[#cbd5e1]">
-                    I combine AI engineering, business analysis, and product thinking to design systems that are not only intelligent, but practical, human-centered, and ready for real-world execution.
-                  </p>
-
-                  <div className="mt-7 flex flex-wrap gap-3">
-                    <a
-                      href="#projects"
-                      className="rounded-full px-5 py-3 text-sm font-semibold text-white transition dark:bg-white dark:text-[#111111] dark:hover:bg-[#dfeafc]"
-                      style={{
-                        backgroundColor: isBA ? "#f59e0b" : "#111111",
-                        color: isBA ? "#111111" : "#ffffff",
-                      }}
-                    >
-                      View work
-                    </a>
-                    <a
-                      href="mailto:jaztemi04@gmail.com"
-                      className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-[#111111] transition dark:border-white/10 dark:bg-[#181a1d] dark:text-white"
-                      style={{ borderColor: isBA ? "rgba(245, 158, 11, 0.4)" : undefined, color: isBA ? "#8a5b00" : undefined }}
-                    >
-                      Contact me
-                    </a>
-                  </div>
-
-                  <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                    {[
-                      { label: "Focus", value: activeTrack === "ai" ? "Product systems" : "Business operations" },
-                      { label: "Approach", value: "Strategic & scalable" },
-                      { label: "Style", value: "Execution-focused" },
-                    ].map((item) => (
-                      <div key={item.label} className="rounded-[20px] border border-black/10 bg-[#f8f8f8] p-3 dark:border-white/10 dark:bg-[#181a1d]">
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">{item.label}</p>
-                        <p className="mt-2 text-sm font-semibold text-[#111111] dark:text-white">{item.value}</p>
+        {/* ===== Services ===== */}
+        <section id="services" aria-labelledby="services-title" className="bg-paper">
+          <Container className="py-24 md:py-44">
+            <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+              <Reveal className="lg:col-span-5">
+                <h2 id="services-title" className={`${h2} lg:sticky lg:top-28`}>
+                  {isBA ? "How I help teams move" : "What I build for teams"}
+                </h2>
+              </Reveal>
+              <ul key={activeTrack} className="space-y-12 md:space-y-16 lg:col-span-7">
+                {services[activeTrack].map((s, i) => (
+                  <li key={s.title}>
+                    <Reveal delay={i * 0.08}>
+                      <div className="lift">
+                        <h3 className="tight text-[clamp(1.7rem,3.2vw,2.9rem)] font-bold">{s.title}</h3>
+                        <p className="mt-3 max-w-xl text-lg leading-8 text-muted">{s.body}</p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div
-                    className="absolute inset-6 rounded-[32px] blur-3xl"
-                    style={{
-                      background: isBA
-                        ? "linear-gradient(135deg, rgba(245,158,11,0.24), rgba(251,191,36,0.15), rgba(255,244,214,0.10))"
-                        : "linear-gradient(135deg, rgba(29,155,240,0.20), rgba(139,92,246,0.15), rgba(250,204,21,0.10))",
-                    }}
-                  />
-                  <div className="relative overflow-hidden rounded-[32px] border border-black/10 bg-[#111111] p-3 shadow-[0_30px_60px_rgba(17,17,17,0.22)] dark:border-white/10 dark:bg-[#0d0f12]">
-                    <div className="rounded-[26px] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(17,17,17,0.9)_30%,_#0a0b0d_100%)] p-3">
-                      <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#101214]">
-                        <img src={isBA ? "/profile-portrait.jpg" : "/profile-portrait.png"} alt="Temitope Ajayi portrait" className="h-[520px] w-full object-cover object-center" />
-                      </div>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
-                      <span>Available now</span>
-                      <span className="inline-flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#34d399]" /> Open to work</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-[32px] border border-black/10 bg-[#fdfdfd] p-5 shadow-[0_18px_50px_rgba(17,17,17,0.04)] dark:border-white/10 dark:bg-[#111315] md:p-7">
-              <div className="mb-5 flex items-center justify-between gap-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">Core strengths</p>
-                <span className="rounded-full border border-black/10 bg-[#f5f5f5] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#374151] dark:border-white/10 dark:bg-[#181a1d] dark:text-[#d1d5db]">
-                  {activeTrack === "ai" ? "AI engineer tools" : "BA capabilities"}
-                </span>
-              </div>
-
-              <div className="flex flex-wrap gap-2.5">
-                {roleSkills[activeTrack].map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em]"
-                    style={{
-                      borderColor: isBA ? "rgba(245, 158, 11, 0.32)" : "rgba(29, 155, 240, 0.28)",
-                      background: isBA ? "rgba(245, 158, 11, 0.10)" : "rgba(29, 155, 240, 0.08)",
-                      color: isBA ? "#7a5300" : "#0f6fb5",
-                    }}
-                  >
-                    {skill}
-                  </span>
+                    </Reveal>
+                  </li>
                 ))}
-              </div>
-            </section>
+              </ul>
+            </div>
+          </Container>
+        </section>
 
-            <section id="projects" className="space-y-5">
-              <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6b7280] dark:text-[#9ca3af]">Featured work</p>
-                  <h2 className="mt-2 text-3xl font-black tracking-[-0.06em] text-[#111111] dark:text-white md:text-4xl">
-                    {activeTrack === "ai" ? "AI engineer portfolio" : "Business analyst portfolio"}
-                  </h2>
-                </div>
-                <div className="rounded-full border border-black/10 bg-white px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#374151] dark:border-white/10 dark:bg-[#111315] dark:text-[#d1d5db]">
-                  Confidential project references
-                </div>
-              </div>
+        {/* ===== About: an inverted band ===== */}
+        <section id="about" aria-labelledby="about-title" className="bg-band text-bandink">
+          <Container className="py-24 md:py-44">
+            <h2 id="about-title" className="sr-only">About</h2>
+            <div className="grid gap-16 lg:grid-cols-12 lg:gap-20">
+              <Reveal className="lg:col-span-7">
+                <p className="tight text-2xl font-semibold md:text-4xl">
+                  I combine AI engineering, business analysis, and product thinking to design systems that are practical, human-centered, and ready for real-world execution.
+                </p>
+                <p key={activeTrack} className="swap mt-8 max-w-xl text-lg leading-8">{track.intro}</p>
+                <dl className="mt-14 grid gap-8 md:grid-cols-3">
+                  {principles.map((p) => (
+                    <div key={p.title}>
+                      <dt className="font-bold">{p.title}</dt>
+                      <dd className="mt-2 text-[16px] leading-7 opacity-80">{p.body}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
 
-              <div className="space-y-5">
-                {projects.map((project, i) => (
-                  <ProjectCard key={project.id} project={project} delay={i * 0.06} />
-                ))}
-              </div>
-            </section>
+              <Reveal delay={0.12} className="lg:col-span-5">
+                <h3 className="text-xl font-bold">{isBA ? "What I bring" : "What I work with"}</h3>
+                <ul key={activeTrack} className="mt-6 columns-2 gap-8 text-lg leading-[2.1]">
+                  {roleSkills[activeTrack].map((skill, i) => (
+                    <li key={skill} className="swap break-inside-avoid" style={{ "--delay": `${i * 0.045}s` } as CSSProperties}>
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
+          </Container>
+        </section>
 
-            <section className="rounded-[32px] border border-black/10 bg-[#fdfdfd] p-6 shadow-[0_18px_50px_rgba(17,17,17,0.04)] dark:border-white/10 dark:bg-[#111315] md:p-8">
-              <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: accentColor }}>Available now</p>
-                  <h3 className="mt-2 max-w-2xl text-3xl font-black tracking-[-0.06em] text-[#111111] dark:text-white md:text-4xl">
-                    {activeTrack === "ai" ? "I build tools and workflows that create practical leverage." : "I turn business complexity into clear action."}
-                  </h3>
-                </div>
+        {/* ===== Process: a staircase ===== */}
+        <section id="process" aria-labelledby="process-title" className="bg-paper">
+          <Container className="py-24 md:py-44">
+            <Reveal>
+              <h2 id="process-title" className={`${h2} max-w-5xl`}>Messy problem to measurable result</h2>
+            </Reveal>
+            <ol className="mt-16 grid gap-12 md:mt-24 md:grid-cols-4 md:gap-8 md:pb-40">
+              {processSteps.map((step, i) => (
+                <li key={step.title} className="stair" style={{ "--off": `${i * 64}px` } as CSSProperties}>
+                  <Reveal delay={i * 0.1}>
+                    <p className="text-[15px] font-semibold text-muted">{lead[i]}</p>
+                    <h3 className="display mt-2 text-[clamp(2rem,3.4vw,3.2rem)]">{step.title}</h3>
+                    <p className="mt-4 text-[17px] leading-7">{step.body}</p>
+                  </Reveal>
+                </li>
+              ))}
+            </ol>
+          </Container>
+        </section>
 
-                <div className="flex flex-wrap gap-3">
-                  <a href="tel:+2349060668794" className="rounded-full bg-[#111111] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1d9bf0] dark:bg-white dark:text-[#111111]">
-                    Open to work
-                  </a>
-                  <a href="mailto:jaztemi04@gmail.com" className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-[#111111] transition hover:border-[#1d9bf0] hover:text-[#1d9bf0] dark:border-white/10 dark:bg-[#181a1d] dark:text-white">
-                    Request a brief
-                  </a>
-                </div>
-              </div>
-            </section>
-          </main>
-        </div>
-      </div>
+        {/* ===== Contact: the whole field turns accent ===== */}
+        <section id="contact" aria-labelledby="contact-title" className="bg-accent text-onaccent">
+          <Container className="py-24 md:py-44">
+            <div className="grid gap-16 lg:grid-cols-12 lg:gap-20">
+              <Reveal className="lg:col-span-7">
+                <h2 id="contact-title" className={h2}>{track.closing}</h2>
+                <p className="mt-8 max-w-lg text-xl leading-8">
+                  I’m open to roles and projects. Send a message and I’ll reply fast.
+                </p>
+                <button onClick={copyEmail} className="display mt-10 block break-all text-left text-[clamp(1.6rem,4.4vw,4rem)] underline decoration-2 underline-offset-[0.18em] hover:decoration-4">
+                  {CONTACT.email}
+                </button>
+                <p aria-live="polite" className="mt-3 h-6 text-[16px] font-semibold">{copied ? "Copied to clipboard." : "Click the address to copy it."}</p>
+                <ul className="mt-10 space-y-2 text-lg font-semibold">
+                  <li><a href={CONTACT.phoneHref} className="tlink">{CONTACT.phone}</a></li>
+                  <li><a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="tlink">Message on WhatsApp ↗</a></li>
+                  <li><a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="tlink">LinkedIn ↗</a></li>
+                </ul>
+              </Reveal>
+
+              <Reveal delay={0.12} className="lg:col-span-5">
+                <form onSubmit={onSubmit} className="grid gap-5 text-ink">
+                  <label className="grid gap-2 text-[15px] font-semibold text-onaccent">
+                    Your name
+                    <input name="name" required autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={field} placeholder="Jane Okafor…" />
+                  </label>
+                  <label className="grid gap-2 text-[15px] font-semibold text-onaccent">
+                    Your email
+                    <input name="email" type="email" inputMode="email" spellCheck={false} required autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={field} placeholder="jane@company.com…" />
+                  </label>
+                  <label className="grid gap-2 text-[15px] font-semibold text-onaccent">
+                    Message
+                    <textarea name="message" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${field} resize-none`} placeholder="Tell me about the role or project…" />
+                  </label>
+                  <button type="submit" className="btn btn-ink justify-center">
+                    Send Message <span className="arrow" aria-hidden="true">→</span>
+                  </button>
+                  <p className="text-[15px] text-onaccent">This opens your email app with the message ready to send.</p>
+                </form>
+              </Reveal>
+            </div>
+          </Container>
+        </section>
+      </main>
+
+      {/* ===== Footer: the name, full width ===== */}
+      <footer className="overflow-hidden bg-paper">
+        <Container className="pb-8 pt-20 md:pt-32">
+          <Reveal>
+            <p aria-hidden="true" className="display whitespace-nowrap text-[13.2vw] leading-[0.85] md:text-[13.4vw]" style={{ letterSpacing: "-0.055em" }}>
+              Temitope Ajayi
+            </p>
+          </Reveal>
+          <div className="mt-10 flex flex-col justify-between gap-3 text-[15px] text-muted sm:flex-row">
+            <p>© {new Date().getFullYear()} Temitope Ajayi. AI Engineer &amp; Business Analyst.</p>
+            <a href="#home" className="tlink">Back to Top ↑</a>
+          </div>
+        </Container>
+      </footer>
     </div>
   );
 }

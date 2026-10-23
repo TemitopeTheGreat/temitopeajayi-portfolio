@@ -1,59 +1,67 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
+import { CONTACT, SITE_URL } from "./data";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const sans = Schibsted_Grotesk({
+  variable: "--font-body-face",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const grok = Space_Grotesk({
-  variable: "--font-grotesk",
-  subsets: ["latin"],
-});
+const title = "Temitope Ajayi | AI Engineer & Business Analyst";
+const description =
+  "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.";
 
 export const metadata: Metadata = {
-  title: "Temitope Ajayi | AI Engineer & Business Analyst",
-  description:
-    "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
+  metadataBase: new URL(SITE_URL),
+  title,
+  description,
+  keywords: ["AI Engineer", "Business Analyst", "Automation", "Next.js", "Workflow design", "Nigeria"],
+  authors: [{ name: CONTACT.name }],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Temitope Ajayi | AI Engineer & Business Analyst",
-    description:
-      "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
-    url: "https://temitopeajayi-portfolio.vercel.app",
-    siteName: "Temitope Ajayi",
-    images: [
-      {
-        url: "/profile-portrait.png",
-        width: 1200,
-        height: 630,
-        alt: "Temitope Ajayi",
-      },
-    ],
+    title,
+    description,
+    url: SITE_URL,
+    siteName: CONTACT.name,
+    type: "website",
+    images: [{ url: "/profile-portrait.png", width: 1200, height: 630, alt: CONTACT.name }],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Temitope Ajayi | AI Engineer & Business Analyst",
-    description:
-      "Portfolio for an AI Engineer and Business Analyst specializing in automation, analytics, workflow design, and strategic operations.",
-    images: ["/profile-portrait.png"],
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/profile-portrait.png",
-  },
+  twitter: { card: "summary_large_image", title, description, images: ["/profile-portrait.png"] },
+  icons: { icon: "/favicon.ico", apple: "/profile-portrait.png" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1011" },
+  ],
+};
+
+// Adds "js" (so reveal-on-scroll never hides content when scripts fail) and restores the saved theme before first paint.
+const bootScript = `(function(){var d=document.documentElement;d.classList.add("js");try{d.classList.toggle("dark",localStorage.getItem("theme")==="dark")}catch(e){}})()`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: CONTACT.name,
+  jobTitle: "AI Engineer & Business Analyst",
+  url: SITE_URL,
+  email: `mailto:${CONTACT.email}`,
+  telephone: CONTACT.phone,
+  sameAs: [CONTACT.linkedin],
+  knowsAbout: ["AI automation", "Business analysis", "Process mapping", "Next.js", "Workflow design"],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${jakarta.variable} ${grok.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-[#f5f5f3] text-[#111111] dark:bg-[#0a0b0d] dark:text-[#f5f5f5]">
-        {children}
-      </body>
+    <html lang="en" suppressHydrationWarning className={`${sans.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }
