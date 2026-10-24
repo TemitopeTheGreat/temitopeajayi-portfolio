@@ -38,7 +38,7 @@ function Feature({ project, flip, index }: { project: Project; flip: boolean; in
             <p className="mt-5 max-w-lg text-[17px] leading-7">{project.summary}</p>
             {project.deliverables ? (
               <div className="mt-5 max-w-lg">
-                <p className="text-[17px] font-semibold">What I produced</p>
+                <p className="text-[17px] font-semibold">{project.listTitle ?? "What I produced"}</p>
                 <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[17px] leading-7">
                   {project.deliverables.map((d) => (
                     <li key={d}>{d}</li>
@@ -64,24 +64,37 @@ function Feature({ project, flip, index }: { project: Project; flip: boolean; in
               </Parallax>
             ) : (
               <div className="bg-band p-8 text-bandink md:p-12">
-                <p className="text-[15px] opacity-80">{project.flow ? "The journey I mapped" : "Where I worked"}</p>
-                {project.flow ? (
-                  <ol className="mt-5 space-y-4">
-                    {project.flow.map((step, i) => (
-                      <li key={step} className="flex gap-4">
-                        <span className="nums flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-[15px] font-bold text-onaccent">{i + 1}</span>
-                        <span className="tight pt-0.5 text-[clamp(1.1rem,2vw,1.5rem)] font-semibold">{step}</span>
-                      </li>
+                {project.stats ? (
+                  <dl className="grid grid-cols-2 gap-x-6 gap-y-9">
+                    {project.stats.map((st) => (
+                      <div key={st.label}>
+                        <dd className="display nums text-[clamp(2.4rem,5vw,4rem)]">{st.value}</dd>
+                        <dt className="mt-2 text-[16px] opacity-85">{st.label}</dt>
+                      </div>
                     ))}
-                  </ol>
+                  </dl>
                 ) : (
-                  <ul className="mt-4 space-y-3">
-                    {project.deliverables?.map((d) => (
-                      <li key={d} className="tight text-[clamp(1.4rem,2.6vw,2.1rem)] font-bold">
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
+                  <>
+                    <p className="text-[15px] opacity-80">{project.flow ? "The journey I mapped" : "Where I worked"}</p>
+                    {project.flow ? (
+                      <ol className="mt-5 space-y-4">
+                        {project.flow.map((step, i) => (
+                          <li key={step} className="flex gap-4">
+                            <span className="nums flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-[15px] font-bold text-onaccent">{i + 1}</span>
+                            <span className="tight pt-0.5 text-[clamp(1.1rem,2vw,1.5rem)] font-semibold">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <ul className="mt-4 space-y-3">
+                        {project.deliverables?.map((d) => (
+                          <li key={d} className="tight text-[clamp(1.4rem,2.6vw,2.1rem)] font-bold">
+                            {d}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -125,6 +138,13 @@ function MoreWork({ projects }: { projects: Project[] }) {
                     {p.liveUrl ? null : " (confidential)"}
                   </p>
                   <p className="mt-2 max-w-2xl text-[17px] leading-7">{p.summary}</p>
+                  {p.deliverables ? (
+                    <ul className="mt-4 max-w-2xl list-disc space-y-1 pl-5 text-[15px] leading-6">
+                      {p.deliverables.map((d) => (
+                        <li key={d}>{d}</li>
+                      ))}
+                    </ul>
+                  ) : null}
                   <p className="mt-3 text-[15px] opacity-70">{p.tags.join(", ")}</p>
                   {p.liveUrl ? (
                     <a href={p.liveUrl} target="_blank" rel="noreferrer" className="tlink mt-3 inline-block font-semibold">
@@ -156,11 +176,89 @@ function Artefacts() {
         <Reveal>
           <h2 id="artefacts-title" className={h2}>Artefacts from the work</h2>
           <p className="mt-4 max-w-2xl text-[17px] leading-7">
-            Two deliverables from the Guardrail Financials project: the process map for sign-up, and the backlog the team built from it.
+            Real documents from two projects: an acceptance matrix and a brief traceability sheet from Learning Loft, and a root-cause analysis, a process map and a backlog from Guardrail Financials.
           </p>
         </Reveal>
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14">
+        <Reveal className="mt-10">
+          <h3 className="tight text-[clamp(1.4rem,2.4vw,2rem)] font-bold">{a.acceptance.title}</h3>
+          <p className="mt-2 max-w-2xl text-[17px] leading-7">{a.acceptance.note}</p>
+          <div className="mt-5 overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-[16px]">
+              <caption className="sr-only">Learning Loft Phase 1 acceptance criteria and results</caption>
+              <thead>
+                <tr className="bg-ink text-paper">
+                  <th scope="col" className="px-4 py-3 font-semibold">#</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">Acceptance criterion</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">Result</th>
+                  <th scope="col" className="px-4 py-3 text-right font-semibold">Tests</th>
+                </tr>
+              </thead>
+              <tbody>
+                {a.acceptance.rows.map((r) => (
+                  <tr key={r.n} className="odd:bg-surface">
+                    <td className="nums px-4 py-3 font-semibold">{r.n}</td>
+                    <td className="px-4 py-3">{r.criterion}</td>
+                    <td className="whitespace-nowrap px-4 py-3 font-semibold">{r.result}</td>
+                    <td className="nums px-4 py-3 text-right">{r.tests}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-14">
+          <Reveal className="min-w-0 lg:col-span-6">
+            <h3 className="tight text-[clamp(1.4rem,2.4vw,2rem)] font-bold">{a.brief.title}</h3>
+            <p className="mt-2 max-w-xl text-[17px] leading-7">{a.brief.note}</p>
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full min-w-[420px] text-left text-[16px]">
+                <caption className="sr-only">Sample of the client brief traceability sheet</caption>
+                <thead>
+                  <tr className="bg-ink text-paper">
+                    <th scope="col" className="px-4 py-3 font-semibold">Brief item</th>
+                    <th scope="col" className="px-4 py-3 font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {a.brief.rows.map((r) => (
+                    <tr key={r.item} className="odd:bg-surface">
+                      <td className="px-4 py-3">{r.item}</td>
+                      <td className="px-4 py-3 font-semibold">{r.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.12} className="min-w-0 lg:col-span-6">
+            <h3 className="tight text-[clamp(1.4rem,2.4vw,2rem)] font-bold">{a.rootCauses.title}</h3>
+            <p className="mt-2 max-w-xl text-[17px] leading-7">{a.rootCauses.note}</p>
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full min-w-[420px] text-left text-[16px]">
+                <caption className="sr-only">Root causes found in the Guardrail foundation audit</caption>
+                <thead>
+                  <tr className="bg-ink text-paper">
+                    <th scope="col" className="px-4 py-3 font-semibold">Issue found</th>
+                    <th scope="col" className="px-4 py-3 font-semibold">Impact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {a.rootCauses.rows.map((r) => (
+                    <tr key={r.issue} className="odd:bg-surface">
+                      <td className="px-4 py-3">{r.issue}</td>
+                      <td className="px-4 py-3">{r.impact}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+        </div>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-14">
           <Reveal className="min-w-0 lg:col-span-5">
             <Frame src={a.swimlane.src} tall={a.swimlane.tall} alt={a.swimlane.alt} label="guardrail-registration-swimlane" />
             <p className="mt-3 text-[15px] text-muted">{a.swimlane.caption}</p>
@@ -211,6 +309,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [lens, setLens] = useState<{ to: TrackKey; n: number } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const progress = useScrollProgress();
 
   useEffect(() => {
@@ -259,11 +358,29 @@ export default function Home() {
     }
   };
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const subject = `Portfolio enquiry from ${form.name}`;
-    const body = `${form.message}\n\n${form.name} (${form.email})`;
-    window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (status === "sending") return;
+    const data = new FormData(e.currentTarget);
+    setStatus("sending");
+    try {
+      const res = await fetch("/__forms.html", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          "form-name": "contact",
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          "bot-field": String(data.get("bot-field") ?? ""),
+        }).toString(),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setStatus("sent");
+      setForm({ name: "", email: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
   };
 
   const track = trackMeta[activeTrack];
@@ -519,7 +636,13 @@ export default function Home() {
               </Reveal>
 
               <Reveal delay={0.12} className="lg:col-span-5">
-                <form onSubmit={onSubmit} className="grid gap-4 text-ink">
+                <form onSubmit={onSubmit} name="contact" className="grid gap-4 text-ink">
+                  <p className="sr-only" aria-hidden="true">
+                    <label>
+                      Leave this field empty
+                      <input name="bot-field" tabIndex={-1} autoComplete="off" />
+                    </label>
+                  </p>
                   <label className="grid gap-1.5 text-[15px] font-semibold text-onaccent">
                     Your name
                     <input name="name" required autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={field} placeholder="Jane Okafor…" />
@@ -532,10 +655,18 @@ export default function Home() {
                     Message
                     <textarea name="message" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${field} resize-none`} placeholder="Tell me about the role or project…" />
                   </label>
-                  <button type="submit" className="btn btn-ink justify-center">
-                    Send Message <span className="arrow" aria-hidden="true">→</span>
+                  <button type="submit" disabled={status === "sending"} className="btn btn-ink justify-center disabled:opacity-60">
+                    {status === "sending" ? "Sending…" : "Send Message"} <span className="arrow" aria-hidden="true">→</span>
                   </button>
-                  <p className="text-[15px] text-onaccent">This opens your email app with the message ready to send.</p>
+                  <div aria-live="polite" role="status" className="min-h-[3rem] text-[16px] font-semibold text-onaccent">
+                    {status === "sent" ? "Thank you. Your message is in, and I’ll reply soon." : null}
+                    {status === "error" ? (
+                      <>
+                        That didn’t send. Please try again, or email{" "}
+                        <a href={`mailto:${CONTACT.email}`} className="tlink">{CONTACT.email}</a>.
+                      </>
+                    ) : null}
+                  </div>
                 </form>
               </Reveal>
             </div>

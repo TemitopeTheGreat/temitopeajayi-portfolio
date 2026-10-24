@@ -8,7 +8,11 @@ export type Project = {
   summary: string;
   impact: string;
   tags: string[];
+  /** Heading for the deliverables list, e.g. "What I produced" or "Under the hood" */
+  listTitle?: string;
   deliverables?: string[];
+  /** Big-number panel shown in place of a screenshot */
+  stats?: { value: string; label: string }[];
   /** Ordered journey steps, shown as a flow when there is no screenshot */
   flow?: string[];
   metrics?: string[];
@@ -161,8 +165,56 @@ export const principles = {
   ],
 } as const;
 
-/** Real artefacts from the Guardrail Financials engagement, shown in the Business Analyst view. */
+/** Real artefacts from the Learning Loft and Guardrail Financials work, shown in the Business Analyst view. */
 export const baArtefacts = {
+  acceptance: {
+    title: "Acceptance matrix",
+    note: "Learning Loft Phase 1. Every criterion in the requirements document maps to automated tests; the last one is confirmed by hand at handover. Run on 2026-10-17.",
+    rows: [
+      { n: "1", criterion: "A new user registers, verifies and sees only permitted features", result: "Pass", tests: "70" },
+      { n: "2", criterion: "A learner gets access only after verified or admin-recorded payment, and receives a receipt", result: "Pass", tests: "72" },
+      { n: "3", criterion: "A learner watches a lesson, takes a quiz and sees progress", result: "Pass", tests: "49" },
+      { n: "4", criterion: "A session is requested and recorded, and double booking is blocked", result: "Pass", tests: "61" },
+      { n: "5", criterion: "A tutor manages availability and sees hours and itemised earnings", result: "Pass", tests: "51" },
+      { n: "6", criterion: "Admin reconciles payments and records payouts with an audit history", result: "Pass", tests: "119" },
+      { n: "7", criterion: "Only learners with a completed booking can review it", result: "Pass", tests: "26" },
+      { n: "8", criterion: "No role can read or change data outside its permissions", result: "Pass", tests: "107" },
+      { n: "9", criterion: "Core journeys work on mobile and desktop", result: "Pass", tests: "84" },
+      { n: "10", criterion: "Client receives code, credentials, documents and ownership of paid services", result: "Manual", tests: "n/a" },
+    ],
+  },
+  brief: {
+    title: "Client brief against what was built",
+    note: "A sample from the traceability sheet. Each line of the client's brief is marked Done, Partly, Not built or Phase 2.",
+    rows: [
+      { item: "Learner dashboard: courses, progress, sessions, receipts, notifications", status: "Done" },
+      { item: "Learner dashboard: saved content", status: "Not built (not in the agreed scope)" },
+      { item: "Teacher wallet: gross, commission, deductions, refunds, net, payout states", status: "Done" },
+      { item: "Live class platform integration", status: "Phase 2 (admin pastes a meeting link for now)" },
+    ],
+  },
+  rootCauses: {
+    title: "Root-cause analysis",
+    note: "From the Guardrail Financials foundation audit, which read nine layers of the product and fixed what it found.",
+    rows: [
+      {
+        issue: "Transactions loaded in a block capped at 5,000 rows",
+        impact: "Audits with more rows were silently cut short",
+      },
+      {
+        issue: "Bank files use different column names (Trans Date, Narration, Withdrawals, Deposits, DR, CR)",
+        impact: "Amounts were never read, so every row was flagged and the outflow showed NGN 0.00",
+      },
+      {
+        issue: "Ledger running balance calculated newest-first",
+        impact: "The balance accumulated backwards through the ledger",
+      },
+      {
+        issue: "Currency shown in two formats on the same page",
+        impact: "The same figure read differently depending on which code path drew it",
+      },
+    ],
+  },
   swimlane: {
     src: "/artefacts/guardrail-registration-swimlane.png",
     tall: 2.015,
@@ -183,56 +235,51 @@ export const baArtefacts = {
   ],
 } as const;
 
-const newProjects: Project[] = [
-  {
-    id: "mayoher",
-    title: "Mayoher",
-    category: "Web Apps",
-    context: "Music, books and events platform",
-    summary:
-      "Designed and built the Mayoher website: one home for music, books, devotionals, videos and live events, with an immersive hero, a shop, a conference page and a mailing-list sign-up.",
-    impact:
-      "Gave the brand a polished, memorable online presence where visitors can discover content, shop and join the list in a few clicks.",
-    tags: ["Branding", "E-commerce", "Content", "Responsive design"],
-    metrics: ["Immersive hero", "Shop", "Mailing list"],
-    liveUrl: "https://www.mayoher.com/",
-    image: "/shots/mayoher-full.jpg",
-    tall: 5.382,
-    accent: ["#f472b6", "#8b5cf6", "#1d9bf0"],
-  },
+export const aiProjects: Project[] = [
   {
     id: "sophia-academy",
     title: "Sophia Academy",
     category: "Web Apps",
-    context: "Biblical academy for believers",
+    context: "Learning platform for an 8-week Bible school",
     summary:
-      "Built the Sophia Academy platform where believers join the live Sunday class, catch up on replays they missed and follow their progress week by week, with student login and facilitator profiles.",
+      "Built the full Sophia Academy platform: a public site, email-only student sign-in, an 8-week class dashboard with live-session links and embedded replays, and an admin area for attendance and progress.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Passwordless sign-in that only works for students an admin has added",
+      "Replay tracking: it warns when a student skips ahead, saves progress as they watch, and completes a class at 95% watched",
+      "Plays YouTube and Google Drive recordings, including Google Meet recordings",
+      "Admin dashboard to tick live attendance, override completion and see progress",
+      "Row-level security in Supabase, plus terms, privacy, cookie consent and download or delete my data",
+    ],
     impact:
-      "Gave students one calm, trustworthy place to attend, replay and track their learning, and gave the academy a strong digital identity.",
-    tags: ["Education", "Student login", "Live classes", "UX", "Responsive design"],
-    metrics: ["Live classes", "Replays", "Progress tracking"],
+      "Students have one place to attend live, catch up on replays and track their progress, and admins have a clear attendance record.",
+    tags: ["Next.js", "TypeScript", "Supabase", "Resend", "Vercel"],
     liveUrl: "https://www.sophiaacademy.net/",
     image: "/shots/sophia-full.jpg",
     tall: 2.216,
     accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
   },
-];
-
-export const aiProjects: Project[] = [
-  ...newProjects,
   {
-    id: "whatsapp-bot",
-    title: "WhatsApp Automation Bot",
-    category: "AI & Automation",
-    context: "Order taking, payments, and service automation",
+    id: "mayoher",
+    title: "Mayoher",
+    category: "Web Apps",
+    context: "Music, books and events website",
     summary:
-      "Built a WhatsApp automation bot that takes customer orders directly in-chat, processes payment for those orders, and synchronizes order and customer details across service flows.",
+      "Built the Mayoher website: a fast static site with no build step, covering music, books, devotionals and the Burn Conference, with photo and video galleries and email sign-ups that save straight to a Google Sheet.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Newsletter and waitlist form posts to a Google Apps Script that writes to a Sheet, skips duplicate emails and ignores bots with a hidden honeypot field",
+      "Free songs and books unlock when a visitor leaves their email",
+      "Burn Conference photo gallery and highlight videos",
+      "Plain HTML, CSS and JavaScript on Vercel, so pages load quickly",
+    ],
     impact:
-      "Improved response speed and reduced operating friction by turning order taking, payment collection, and customer communication into a single automated workflow.",
-    tags: ["WhatsApp", "Payments", "Automation", "Order flow", "Integration"],
-    metrics: ["Automation", "Payments", "Order sync", "Response speed"],
-    image: "/whatsapp-bot-architecture.svg",
-    accent: ["#34d399", "#1d9bf0", "#8b5cf6"],
+      "Gave the brand a polished home online and a simple way to grow its mailing list without a database or monthly fees.",
+    tags: ["HTML, CSS, JavaScript", "Google Apps Script", "Google Sheets", "Vercel"],
+    liveUrl: "https://www.mayoher.com/",
+    image: "/shots/mayoher-full.jpg",
+    tall: 5.382,
+    accent: ["#f472b6", "#8b5cf6", "#1d9bf0"],
   },
   {
     id: "guardrail",
@@ -240,30 +287,22 @@ export const aiProjects: Project[] = [
     category: "Fintech",
     context: "Bookkeeping audit platform for SMEs",
     summary:
-      "Built an audit platform that lets SMEs check their books, surfacing financial records, discrepancies, and risk areas through a clear, structured review workflow.",
+      "Built an audit platform where an SME uploads a bank statement or spreadsheet and gets cleaned data, flagged problems, an audit score and a PDF report, without needing a full-time auditor.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Reads Nigerian bank exports, including varied column names, DR and CR suffixes, bracketed negatives and day-first dates",
+      "Checks that debits equal credits, finds duplicates, flags invalid dates and missing amounts, and assigns categories",
+      "Nigerian tax engine, multi-station business view, and spending goals with variance warnings",
+      "Supabase with row-level security on every table; PDF reports delivered through signed links",
+      "Phase-by-phase test checklists and a nine-layer foundation audit",
+    ],
     impact:
-      "Improved financial oversight for small businesses by making book audits faster, more visible, and easier to act on without needing a full-time auditor.",
-    tags: ["Next.js", "Audit", "Fintech", "Dashboard", "Workflow"],
-    metrics: ["Book audits", "Risk visibility", "Workflow clarity", "SME-ready"],
+      "Makes book audits faster, more visible and easier to act on for small businesses and freelancers.",
+    tags: ["JavaScript", "Supabase", "Vercel", "Fintech", "PDF reports"],
     liveUrl: "https://guardrail-ashen.vercel.app/",
     image: "/shots/guardrail-full.jpg",
     tall: 5.16,
     accent: ["#1d9bf0", "#8b5cf6", "#34d399"],
-  },
-  {
-    id: "treasurevilla",
-    title: "Treasureville",
-    category: "Web Apps",
-    context: "Kids check-in system with unique codes",
-    summary:
-      "Designed and built a check-in system for kids that issues each child a unique code, letting staff verify and check them in and out quickly and securely.",
-    impact:
-      "Created a faster, more reliable check-in experience that gives staff and parents confidence in exactly who picked up which child, and when.",
-    tags: ["Next.js", "Check-in", "Unique codes", "Product design", "Front-end"],
-    metrics: ["Unique codes", "Check-in speed", "Mobile-ready", "Verification"],
-    liveUrl: "https://ln.run/M3RYD",
-    image: "/treasureville-login.svg",
-    accent: ["#f59e0b", "#f472b6", "#1d9bf0"],
   },
   {
     id: "nexavoice",
@@ -275,54 +314,147 @@ export const aiProjects: Project[] = [
     impact:
       "Cut average handling time to under five minutes by unifying CRM, core banking, and ticketing data in one agent workspace, while automated call scoring kept every interaction aligned with NDPR and CBN compliance.",
     tags: ["Voice AI", "NLP", "Compliance", "Fintech", "Integration"],
-    metrics: ["Multilingual", "Compliance", "Fraud detection", "Handling time"],
     liveUrl: "https://nexavoice-delta.vercel.app/",
     image: "/shots/nexavoice-full.jpg",
     tall: 3.413,
     accent: ["#6366f1", "#22d3ee", "#f59e0b"],
   },
   {
-    id: "ai-operations",
-    title: "AI Operations Workflow",
-    category: "Operations",
-    context: "Automation and process optimization",
+    id: "whatsapp-bot",
+    title: "WhatsApp Ordering Bot",
+    category: "AI & Automation",
+    context: "Order taking and payment for a bakery",
     summary:
-      "Designed an AI-assisted operations flow for handling recurring service and intake tasks with clearer structure, less manual dependency, and stronger execution consistency.",
+      "Built a WhatsApp assistant for a bakery. Customers choose a category, item, size and quantity in chat, share a delivery location and pay through Paystack, and the baker approves or declines each request by replying on WhatsApp.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "A 34-step n8n workflow behind a self-hosted WhatsApp gateway (Evolution API), run with Docker",
+      "A guided menu with saved session state, plus an AI agent (Groq or Gemini) for free-text questions",
+      "Stock, sizes, prices and lead times read live from a Google Sheet",
+      "Delivery location understood by Gemini; payment link created through Paystack",
+    ],
     impact:
-      "Improved process quality and response speed by transforming repetitive coordination into a more reliable, systemized workflow.",
-    tags: ["AI workflow", "Automation", "Ops design", "Decision support", "Process mapping"],
-    metrics: ["Automation", "Response speed", "Consistency", "Workflow clarity"],
+      "Turns order taking, payment and baker approval into one automated WhatsApp flow instead of back-and-forth messages.",
+    tags: ["n8n", "WhatsApp", "Paystack", "Gemini", "Docker", "Google Sheets"],
+    image: "/whatsapp-bot-architecture.svg",
     accent: ["#34d399", "#1d9bf0", "#8b5cf6"],
   },
   {
-    id: "intake-automation",
-    title: "AI Intake & Screening Flow",
-    category: "Operations",
-    context: "Structured decision support",
+    id: "hiyame",
+    title: "Hiyame",
+    category: "Web Apps",
+    context: "Two-sided recruiting marketplace (private)",
     summary:
-      "Developed a workflow that organizes incoming requests, standardizes evaluation pathways, and reduces the manual effort required in high-volume decision tasks.",
+      "Built solo: companies post roles, candidates build verified profiles, and a matching engine scores candidates out of 100 and produces a shortlist. One Expo codebase runs on iOS, Android and the web.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Weighted matching engine with hard exclusions, scores saved and re-runnable, weights kept in one place",
+      "38 database migrations with row-level security; the service role never reaches the client",
+      "21 unit tests and 20 end-to-end tests against the real backend, including accessibility checks",
+      "Scheduled jobs in Postgres, email and web push notifications, and identity verification with Smile ID",
+    ],
     impact:
-      "Allowed work to move faster with better consistency by turning ad hoc intake into a more structured screening model.",
-    tags: ["AI workflow", "Automation", "Screening", "Data handling", "Evaluation"],
-    metrics: ["Intake structure", "Automation", "Screening flow", "Efficiency"],
+      "A working hiring marketplace with privacy, verification and tested matching built in from the start.",
+    tags: ["Expo", "React Native", "TypeScript", "Supabase", "Vercel"],
+    accent: ["#34d399", "#1d9bf0", "#8b5cf6"],
+  },
+  {
+    id: "learning-loft",
+    title: "Learning Loft Platform",
+    category: "Web Apps",
+    context: "Learning and tutoring platform for a client (private)",
+    summary:
+      "Built a platform where learners and parents buy courses and book tutors, tutors manage availability and earnings, and admins reconcile payments and run the business.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Students, parents, tutors and admins, with access rules enforced in the database",
+      "Payments through Monnify and Paystack with webhooks, a ledger, payout records and an audit trail",
+      "Double-booking protection and itemised tutor earnings",
+      "639 automated acceptance tests across nine criteria, all passing",
+    ],
+    impact:
+      "Covers the whole money-to-learning path: find a course, pay, learn, and track progress.",
+    tags: ["Next.js", "Supabase", "Monnify", "Paystack", "Testing"],
+    accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
+  },
+  {
+    id: "recruit-crm",
+    title: "Recruitment CRM",
+    category: "Operations",
+    context: "Agency management system (confidential)",
+    summary:
+      "Built a recruitment agency system for candidates, clients and the hiring pipeline, with role-based access, CV uploads, scheduling emails and AI-assisted screening.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Real-time pipeline on Firestore for team leads, client managers and recruiters",
+      "CV uploads, interview scheduling emails and AI-assisted candidate screening",
+      "A scheduled pipeline that syncs the CRM to Google Sheets for reporting, on Lagos time",
+    ],
+    impact:
+      "Gave the team one live view of candidates and interviews, and reporting that no longer needs manual copying.",
+    tags: ["Firebase", "JavaScript", "Claude API", "Google Sheets", "Automation"],
     accent: ["#1d9bf0", "#22c55e", "#fbbf24"],
   },
   {
-    id: "ops-visibility",
-    title: "Ops Visibility Layer",
+    id: "onboarding-form",
+    title: "Employee Onboarding Intake",
     category: "Operations",
-    context: "Operational monitoring and alignment",
+    context: "Document collection automation (confidential)",
     summary:
-      "Built a practical monitoring layer for operational work, helping teams track movement, visibility, and decision support in a cleaner format.",
+      "Built a web form that collects a full onboarding questionnaire and supporting documents, then files everything into a folder per candidate in Google Drive with a summary row in Google Sheets.",
+    listTitle: "Under the hood",
+    deliverables: [
+      "Multi-step form that uploads each file separately to stay within hosting limits",
+      "Creates a named Drive folder per candidate and a text summary of every answer",
+      "Authorised through a real Google account with OAuth2, not a service account",
+    ],
     impact:
-      "Strengthened team coordination by improving visibility across service flow and operational decision points.",
-    tags: ["Monitoring", "AI ops", "Feedback", "Process design", "Visibility"],
-    metrics: ["Visibility", "Coordination", "Feedback", "Operational clarity"],
+      "Replaces chasing documents by email with one tidy submission and one folder per person.",
+    tags: ["Node.js", "Express", "Google Drive API", "Google Sheets", "OAuth2"],
     accent: ["#8b5cf6", "#14b8a6", "#f59e0b"],
+  },
+  {
+    id: "treasurevilla",
+    title: "Treasureville",
+    category: "Web Apps",
+    context: "Kids check-in system with unique codes",
+    summary:
+      "Designed and built a check-in system for kids that issues each child a unique code, letting staff verify and check them in and out quickly and securely.",
+    impact:
+      "Created a faster, more reliable check-in experience that gives staff and parents confidence in exactly who picked up which child, and when.",
+    tags: ["Next.js", "Check-in", "Unique codes", "Product design", "Front-end"],
+    liveUrl: "https://ln.run/M3RYD",
+    image: "/treasureville-login.svg",
+    accent: ["#f59e0b", "#f472b6", "#1d9bf0"],
   },
 ];
 
 export const baProjects: Project[] = [
+  {
+    id: "learning-loft-ba",
+    title: "Learning Loft Platform",
+    category: "Web Apps",
+    context: "Requirements and acceptance for a learning and tutoring platform (client work)",
+    summary:
+      "Turned a client's written brief into an agreed product requirements document, a data model, a test plan and a signed-off acceptance sheet for a platform with four kinds of user.",
+    listTitle: "What I produced",
+    deliverables: [
+      "Product requirements document with two phases, ten acceptance criteria and a weekly plan",
+      "The client brief checked section by section: Done, Partly, Not built or Phase 2",
+      "Data model, security rules, payments flow, test plan and a decisions log",
+      "Handover pack and training guides for admins, tutors, students and parents",
+    ],
+    impact:
+      "One shared definition of done, and a clear record of what was built, what was deferred and what was still open.",
+    tags: ["PRD", "Acceptance criteria", "Traceability", "Test planning", "Stakeholders"],
+    stats: [
+      { value: "639", label: "automated acceptance tests" },
+      { value: "9 of 9", label: "testable criteria passing" },
+      { value: "4", label: "user roles specified" },
+      { value: "2", label: "phases scoped, with a gate" },
+    ],
+    accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
+  },
   {
     id: "guardrail-ba",
     title: "Guardrail Financials",
@@ -330,14 +462,16 @@ export const baProjects: Project[] = [
     context: "Requirements and process design for an SME bookkeeping audit platform",
     summary:
       "Evaluated how small businesses check their books and turned that into a structured audit workflow, mapping stakeholder touchpoints, review steps, and risk areas into a clearer service design.",
-    impact:
-      "Improved clarity around audit ownership, review priorities, and reporting by structuring a more dependable book-checking process for SMEs.",
+    listTitle: "What I produced",
     deliverables: [
       "Swimlane process map for registration and email verification",
       "Product backlog in Jira with user stories and error paths",
-      "Stakeholder touchpoints, review steps and risk areas",
+      "Test checklists with acceptance criteria for each build phase",
+      "Root-cause analysis from a nine-layer foundation audit",
     ],
-    tags: ["Process design", "User stories", "Jira", "Risk review", "Stakeholders"],
+    impact:
+      "Improved clarity around audit ownership, review priorities, and reporting by structuring a more dependable book-checking process for SMEs.",
+    tags: ["Process design", "User stories", "Jira", "Root-cause analysis", "UAT"],
     liveUrl: "https://guardrail-ashen.vercel.app/",
     image: "/guardrail-backlog.svg",
     accent: ["#1d9bf0", "#8b5cf6", "#34d399"],
@@ -346,16 +480,17 @@ export const baProjects: Project[] = [
     id: "treasurevilla-ba",
     title: "Treasureville",
     category: "Web Apps",
-    context: "Check-in journey and process design for a children’s service",
+    context: "Check-in journey and process design for a children's service",
     summary:
       "Mapped the end-to-end check-in journey for kids, from unique code issuance to staff verification and pickup, to improve clarity, speed, and safety at every handoff.",
-    impact:
-      "Powered a faster, more trustworthy check-in process by clarifying exactly how codes are issued, verified, and matched at pickup.",
+    listTitle: "What I produced",
     deliverables: [
       "End-to-end check-in journey map",
       "Code issuance, verification and pickup steps",
       "Handoff points between parents and staff",
     ],
+    impact:
+      "Powered a faster, more trustworthy check-in process by clarifying exactly how codes are issued, verified, and matched at pickup.",
     tags: ["Journey mapping", "Service flow", "UX", "Research"],
     flow: [
       "A unique code is issued to the child",
@@ -373,14 +508,15 @@ export const baProjects: Project[] = [
     context: "Process improvement and service operations",
     summary:
       "Worked across issue tracking, IT asset visibility, and operational handoff points to improve clarity, documentation, and service continuity in a complex environment.",
-    impact:
-      "Helped shape a stronger operational foundation by improving visibility, accountability, and consistency in support and service activities.",
+    listTitle: "What I produced",
     deliverables: [
       "Issue-tracking flow",
       "IT asset visibility",
       "Operational handoff points",
       "Process documentation",
     ],
+    impact:
+      "Helped shape a stronger operational foundation by improving visibility, accountability, and consistency in support and service activities.",
     tags: ["IT support", "Documentation", "Process improvement", "Stakeholder alignment"],
     accent: ["#22c55e", "#1d9bf0", "#fbbf24"],
   },
